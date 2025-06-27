@@ -1,4 +1,5 @@
 import { BotContainerContext } from "@/contexts/BotContainerContext";
+import { textColor } from "@/lib/textColor";
 import { startChatQuery } from "@/queries/startChatQuery";
 import type { BotContext } from "@/types";
 import { CorsError } from "@/utils/CorsError";
@@ -343,6 +344,18 @@ const BotContent = (props: BotContentProps) => {
   });
 
   return (
+    // <BotWSContext.Provider
+    //   value={
+    //     null as unknown as PartySocket
+    //     // new PartySocket({
+    //     //   host: props.context.wsHost as string,
+    //     //   room: getRoomName({
+    //     //     sessionId: props.context.sessionId as string,
+    //     //     // resultId: props.context.resultId as string,
+    //     //   }),
+    //     // })
+    //   }
+    // >
     <BotContainerContext.Provider value={() => botContainer}>
       <div
         ref={botContainer}
@@ -430,7 +443,10 @@ const BotContent = (props: BotContentProps) => {
             "align-self": "center",
             "align-items": "center",
             gap: "10px",
-            color: "#777777",
+            color: textColor(
+              props.context.typebot.theme.general?.background?.content ||
+                "#fff",
+            ),
             "font-size": "10px",
             width: "100%",
             height: "40px",
@@ -449,5 +465,6 @@ const BotContent = (props: BotContentProps) => {
         </div>
       </div>
     </BotContainerContext.Provider>
+    // </BotWSContext.Provider>
   );
 };

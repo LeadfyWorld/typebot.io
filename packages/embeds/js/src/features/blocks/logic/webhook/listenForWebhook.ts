@@ -1,3 +1,4 @@
+import { getRoomName } from "@/contexts/BotWSContext";
 import type { ClientSideActionContext } from "@/types";
 import { getPartyKitHost } from "@/utils/getPartyKitHost";
 import type { LogInSession } from "@typebot.io/logs/schemas";
@@ -7,9 +8,15 @@ type Props = {
   resultId?: string;
   sessionId: string;
   context: ClientSideActionContext;
+  partySocket: PartySocket;
 };
 
-export const listenForWebhook = ({ sessionId, resultId, context }: Props) => {
+export const listenForWebhook = ({
+  sessionId,
+  resultId,
+  context,
+  partySocket,
+}: Props) => {
   const ws = new PartySocket({
     host: getPartyKitHost(context.wsHost),
     room: getRoomName({ sessionId, resultId }),
@@ -36,13 +43,4 @@ export const listenForWebhook = ({ sessionId, resultId, context }: Props) => {
       });
     });
   });
-};
-
-const getRoomName = ({
-  sessionId,
-  resultId,
-}: Pick<Props, "sessionId" | "resultId">) => {
-  if (resultId) return `${resultId}/webhooks`;
-  const [typebotId, userId] = sessionId.split("-");
-  return `${userId}/${typebotId}/webhooks`;
 };

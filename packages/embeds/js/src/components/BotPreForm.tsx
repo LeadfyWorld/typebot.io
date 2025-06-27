@@ -3,6 +3,7 @@ import {
   ChatContainerSizeContext,
   createChatContainerProviderValue,
 } from "@/contexts/ChatContainerSizeContext";
+import { textColor } from "@/lib/textColor";
 import { startChatQuery } from "@/queries/startChatQuery";
 import type { BotContext } from "@/types";
 import { CorsError } from "@/utils/CorsError";
@@ -409,7 +410,7 @@ const BotContent = (props: BotContentProps) => {
       <div
         ref={botContainer}
         class={cx(
-          "relative flex w-full overflow-hidden h-full text-base flex-col justify-center items-center typebot-container",
+          "relative flex w-full overflow-hidden h-full text-base flex-col justify-center items-center typebot-container typebot-pre-form-container",
           props.class,
         )}
         style={{
@@ -696,7 +697,10 @@ const BotContent = (props: BotContentProps) => {
             "align-self": "center",
             "align-items": "center",
             gap: "10px",
-            color: "#777777",
+            color: textColor(
+              props.context.typebot.theme.general?.background?.content ||
+                "#fff",
+            ),
             "font-size": "10px",
             width: "100%",
             height: "40px",

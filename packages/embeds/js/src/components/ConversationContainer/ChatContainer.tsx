@@ -1,4 +1,5 @@
 import { useBotContainer } from "@/contexts/BotContainerContext";
+import { useBotWS } from "@/contexts/BotWSContext";
 import {
   ChatContainerSizeContext,
   createChatContainerProviderValue,
@@ -65,6 +66,8 @@ type Props = {
 
 export const ChatContainer = (props: Props) => {
   let chatContainer: HTMLDivElement | undefined;
+
+  const partySocket = useBotWS();
 
   const botContainer = useBotContainer();
 
@@ -353,6 +356,7 @@ export const ChatContainer = (props: Props) => {
           sessionId: props.initialChatReply.sessionId,
           resultId: props.initialChatReply.resultId,
         },
+        partySocket,
         onMessageStream: streamMessage,
         onStreamError: async (error) => {
           setChatChunks(setRetryStatusOnLastAnswer);
