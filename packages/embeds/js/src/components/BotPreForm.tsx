@@ -240,7 +240,7 @@ export const BotPreForm = (props: BotProps & { class?: string }) => {
         keyed
       >
         {(initialChatReply) => (
-          <BotContent
+          <BotFormContent
             setLead={props.setLead}
             class={props.class}
             initialChatReply={{
@@ -289,7 +289,7 @@ export const BotPreForm = (props: BotProps & { class?: string }) => {
   );
 };
 
-type BotContentProps = {
+type BotFormContentProps = {
   setLead: (values: { name: string; email: string; phone: string }) => void;
   initialChatReply: StartChatResponse;
   context: BotContext;
@@ -302,7 +302,7 @@ type BotContentProps = {
   onScriptExecutionSuccess?: (message: string) => void;
 };
 
-const BotContent = (props: BotContentProps) => {
+const BotFormContent = (props: BotFormContentProps) => {
   let chatContainer: HTMLDivElement | undefined;
 
   const [success, setSuccess] = createSignal(false);
@@ -363,7 +363,7 @@ const BotContent = (props: BotContentProps) => {
         defaultContainerBackgroundColor) === "transparent",
   );
 
-  const onSubmit = (e: Event) => {
+  const onSubmit = async (e: Event) => {
     e.preventDefault();
 
     const formData = new FormData(e.target as HTMLFormElement);
@@ -529,12 +529,15 @@ const BotContent = (props: BotContentProps) => {
                         <div>
                           <label
                             for="name"
-                            class="block text-sm font-semibold text-gray-800 mb-1"
+                            class="block text-sm font-semibold mb-1"
+                            style={{
+                              color: textColor(
+                                props.context.typebot.theme.general?.background
+                                  ?.content || "#fff",
+                              ),
+                            }}
                           >
-                            Seu nome{" "}
-                            <span class="text-sm font-normal text-gray-500">
-                              (ou como gosta de ser chamado 😉)
-                            </span>
+                            Seu nome
                           </label>
 
                           <TextInput
@@ -571,12 +574,15 @@ const BotContent = (props: BotContentProps) => {
                         <div>
                           <label
                             for="email"
-                            class="block text-sm font-semibold text-gray-800 mb-1"
+                            class="block text-sm font-semibold mb-1"
+                            style={{
+                              color: textColor(
+                                props.context.typebot.theme.general?.background
+                                  ?.content || "#fff",
+                              ),
+                            }}
                           >
-                            Seu e-mail{" "}
-                            <span class="text-sm font-normal text-gray-500">
-                              (aquele que você sempre usa)
-                            </span>
+                            Seu e-mail
                           </label>
 
                           {/* <div>
@@ -633,12 +639,16 @@ const BotContent = (props: BotContentProps) => {
                         <div>
                           <label
                             for="phone"
-                            class="block text-sm font-semibold text-gray-800 mb-1"
+                            class="block text-sm font-semibold mb-1"
+                            style={{
+                              color: textColor(
+                                props.context.typebot.theme.general?.background
+                                  ?.content || "#fff",
+                              ),
+                            }}
                           >
                             Seu telefone{" "}
-                            <span class="text-sm font-normal text-gray-500">
-                              (com DDD)
-                            </span>
+                            <span class="text-sm font-normal">(com DDD)</span>
                           </label>
 
                           <PhoneInput

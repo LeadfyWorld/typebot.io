@@ -1,5 +1,4 @@
 import { Bot, type BotProps } from "@/components/Bot";
-import { BotPreForm } from "@/components/BotPreForm";
 import { getPaymentInProgressInStorage } from "@/features/blocks/inputs/payment/helpers/paymentInProgressStorage";
 import { chatwootWebWidgetOpenedMessage } from "@/features/blocks/integrations/chatwoot/constants";
 import type { CommandData } from "@/features/commands/types";
@@ -64,35 +63,6 @@ const setLocalStorageValue = (key: string, value: string | null) => {
 };
 
 export const Bubble = (props: BubbleProps) => {
-  const LEAD_NAME_KEY = "leadName";
-  const LEAD_EMAIL_KEY = "leadEmail";
-  const LEAD_PHONE_KEY = "leadPhone";
-
-  const [leadName, _setLeadName] = createSignal<string | null>(
-    getLocalStorageValue(LEAD_NAME_KEY),
-  );
-  const [leadEmail, _setLeadEmail] = createSignal<string | null>(
-    getLocalStorageValue(LEAD_EMAIL_KEY),
-  );
-  const [leadPhone, _setLeadPhone] = createSignal<string | null>(
-    getLocalStorageValue(LEAD_PHONE_KEY),
-  );
-
-  const setLeadName = (value: string | null) => {
-    _setLeadName(value);
-    setLocalStorageValue(LEAD_NAME_KEY, value);
-  };
-
-  const setLeadEmail = (value: string | null) => {
-    _setLeadEmail(value);
-    setLocalStorageValue(LEAD_EMAIL_KEY, value);
-  };
-
-  const setLeadPhone = (value: string | null) => {
-    _setLeadPhone(value);
-    setLocalStorageValue(LEAD_PHONE_KEY, value);
-  };
-
   const [bubbleProps, botProps] = splitProps(props, [
     "isOpen",
     "onOpen",
@@ -107,16 +77,19 @@ export const Bubble = (props: BubbleProps) => {
 
   const [bubbleLifecycle, setBubbleLifecycle] =
     createSignal<BubbleLifecycle>("idle");
+
   const [hasOpenedOnce, setHasOpenedOnce] = createSignal(false);
+
+  const [leadInfo, setLeadInfo] = createSignal<{
+    name: string;
+    email: string;
+    phone: string;
+  } | null>(null);
 
   const isControlled = createMemo(() => isDefined(bubbleProps.isOpen));
 
   const isOpen = createMemo(() =>
     isControlled() ? bubbleProps.isOpen! : bubbleLifecycle() === "open",
-  );
-
-  const [prefilledVariables, setPrefilledVariables] = createSignal(
-    botProps.prefilledVariables,
   );
 
   const [previewMessage, setPreviewMessage] = createSignal<
@@ -172,9 +145,6 @@ export const Bubble = (props: BubbleProps) => {
         break;
       case "hidePreviewMessage":
         hidePreviewMessage();
-        break;
-      case "setPrefilledVariables":
-        setPrefilledVariables((prev) => ({ ...prev, ...data.variables }));
         break;
       case "unmount":
         unmountBubble();
@@ -358,43 +328,16 @@ export const Bubble = (props: BubbleProps) => {
                 : "bottom-[calc(100%+var(--button-gap))] w-screen",
             )}
           >
-            <Show
-              when={hasOpenedOnce() && leadName() && leadEmail() && leadPhone()}
-            >
+            <Show when={hasOpenedOnce()}>
               <Bot
                 {...botProps}
                 onScriptExecutionSuccess={handleScriptExecutionSuccess}
                 onChatStatePersisted={handleOnChatStatePersisted}
-                // prefilledVariables={prefilledVariables()}
-                prefilledVariables={{
-                  UserName: leadName(),
-                  UserEmail: leadEmail(),
-                  UserPhone: leadPhone(),
-                }}
-              />
-            </Show>
+                leadInfo={leadInfo()}
+                setLead={(value) => {
+                  console.log("setLead", value);
 
-            <Show
-              when={
-                hasOpenedOnce() && (!leadName() || !leadEmail() || !leadPhone())
-              }
-            >
-              <BotPreForm
-                {...botProps}
-                onScriptExecutionSuccess={handleScriptExecutionSuccess}
-                onChatStatePersisted={handleOnChatStatePersisted}
-                prefilledVariables={{
-                  UserName: leadName(),
-                  UserEmail: leadEmail(),
-                  UserPhone: leadPhone(),
-                }}
-                // prefilledVariables={prefilledVariables()}
-                setLead={(values) => {
-                  console.log("Setting lead values:", values);
-
-                  setLeadName(values.name);
-                  setLeadEmail(values.email);
-                  setLeadPhone(values.phone);
+                  setLeadInfo(value);
                 }}
               />
             </Show>

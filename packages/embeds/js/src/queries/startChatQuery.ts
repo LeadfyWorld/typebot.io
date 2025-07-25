@@ -40,12 +40,14 @@ export async function startChatQuery({
 
   const paymentInProgressStateStr =
     getPaymentInProgressInStorage() ?? undefined;
+
   const paymentInProgressState = paymentInProgressStateStr
     ? (JSON.parse(paymentInProgressStateStr) as {
         sessionId: string;
         typebot: BotContext["typebot"];
       })
     : undefined;
+
   if (paymentInProgressState) {
     return resumeChatAfterPaymentRedirect({
       apiHost,
@@ -53,7 +55,11 @@ export async function startChatQuery({
       paymentInProgressState,
     });
   }
+
   const typebotId = typeof typebot === "string" ? typebot : typebot.id;
+
+  console.log("isPreview", isPreview, sessionId);
+
   if (isPreview) {
     return startPreviewChat({
       apiHost,
@@ -70,6 +76,7 @@ export async function startChatQuery({
       parent !== window && isNotEmpty(document.referrer)
         ? new URL(document.referrer).origin
         : undefined;
+
     const response = await ky.post(
       `${getApiHost(apiHost)}/api/v1/typebots/${typebotId}/startChat`,
       {
@@ -81,6 +88,7 @@ export async function startChatQuery({
           prefilledVariables,
           resultId,
           isOnlyRegistering: false,
+          conversationId: gaGlobal.vid,
         } satisfies Omit<
           StartChatInput,
           "publicId" | "textBubbleContentFormat"
@@ -89,9 +97,13 @@ export async function startChatQuery({
       },
     );
 
-    return { data: await response.json<StartChatResponse>() };
+    return {
+      data: await response.json<StartChatResponse>(),
+    };
   } catch (error) {
-    return { error };
+    return {
+      error,
+    };
   }
 }
 
@@ -118,6 +130,7 @@ const resumeChatAfterPaymentRedirect = async ({
         {
           json: {
             message: stripeRedirectStatus === "failed" ? "fail" : "Success",
+            conversationId: gaGlobal.vid,
           },
           timeout: false,
         },
@@ -161,6 +174,7 @@ const startPreviewChat = async ({
             typebot,
             prefilledVariables,
             sessionId,
+            conversationId: gaGlobal.vid,
           } satisfies Omit<
             StartPreviewChatInput,
             "typebotId" | "isOnlyRegistering" | "textBubbleContentFormat"

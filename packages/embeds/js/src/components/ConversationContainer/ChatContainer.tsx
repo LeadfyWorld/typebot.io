@@ -17,7 +17,6 @@ import { mergeThemes } from "@/utils/dynamicTheme";
 import { isNetworkError } from "@/utils/error";
 import { executeClientSideAction } from "@/utils/executeClientSideActions";
 import { getAnswerContent } from "@/utils/getAnswerContent";
-import { migrateLegacyChatChunks } from "@/utils/migrateLegacyChatChunks";
 import { persist } from "@/utils/persist";
 import { setGeneralBackground } from "@/utils/setCssVariablesValue";
 import { toaster } from "@/utils/toaster";
@@ -67,68 +66,92 @@ type Props = {
 export const ChatContainer = (props: Props) => {
   let chatContainer: HTMLDivElement | undefined;
 
+  console.log("props", props);
+
   const partySocket = useBotWS();
 
   const botContainer = useBotContainer();
 
-  const [chatChunks, setChatChunks] = persist(
-    createSignal<ChatChunkType[]>([
-      {
-        version: "2",
-        input: props.initialChatReply.input,
-        messages: props.initialChatReply.messages,
-        clientSideActions: props.initialChatReply.clientSideActions,
-        dynamicTheme: props.initialChatReply.dynamicTheme,
-      },
-    ]),
-    {
-      key: `typebot-${props.context.typebot.id}-chatChunks`,
-      storage: props.context.storage,
-      transformInitDataFromStorage: (data) =>
-        migrateLegacyChatChunks(data, {
-          storage: props.context.storage,
-          typebotId: props.context.typebot.id,
-        }),
-      onRecovered: () => {
-        setTimeout(() => {
-          getScrollContainer()?.scrollTo(0, getScrollContainer()!.scrollHeight);
-        }, 200);
-      },
-    },
-  );
+  console.log("initial", {
+    version: "2",
+    input: props.initialChatReply.input,
+    messages: props.initialChatReply.messages,
+    clientSideActions: props.initialChatReply.clientSideActions,
+    dynamicTheme: props.initialChatReply.dynamicTheme,
+  });
+
+  console.log("props.initialChatReply", props.initialChatReply);
+
+  // const chatChunks = props.initialChatReply.chunks;
+
+  const [chatChunks, setChatChunks] = createSignal<ChatChunkType[]>([
+    // {
+    //   version: "2",
+    //   input: props.initialChatReply.input,
+    //   messages: props.initialChatReply.messages,
+    //   clientSideActions: props.initialChatReply.clientSideActions,
+    //   dynamicTheme: props.initialChatReply.dynamicTheme,
+    // },
+    ...props.initialChatReply.chunks,
+  ]);
+  // {
+  //   key: `typebot-${props.context.typebot.id}-chatChunks`,
+  //   storage: props.context.storage,
+  //   transformInitDataFromStorage: (data) => {
+  //     return migrateLegacyChatChunks(data, {
+  //       storage: props.context.storage,
+  //       typebotId: props.context.typebot.id,
+  //     });
+  //   },
+  //   onRecovered: () => {
+  //     setTimeout(() => {
+  //       getScrollContainer()?.scrollTo(0, getScrollContainer()!.scrollHeight);
+  //     }, 200);
+  //   },
+  // },
+  // );
 
   const [isEnded, setIsEnded] = persist(createSignal(false), {
     key: `typebot-${props.context.typebot.id}-isEnded`,
     storage: props.context.storage,
   });
+
   const [isSending, setIsSending] = createSignal(false);
+
   const [isLastAutoScrollAtBottom, setIsLastAutoScrollAtBottom] =
     createSignal(true);
 
   onMount(() => {
     window.addEventListener("message", processIncomingEvent);
+
     (async () => {
       const isRecoveredFromStorage = chatChunks().length > 1;
+
       if (isRecoveredFromStorage) {
         cleanupRecoveredChatChunks();
+
         const lastDynamicThemeWithBg = chatChunks().findLast(
           (chunk) => chunk.dynamicTheme?.backgroundUrl,
         )?.dynamicTheme;
+
         if (lastDynamicThemeWithBg?.backgroundUrl)
           updateBgImage(
             lastDynamicThemeWithBg.backgroundUrl,
             botContainer()?.style,
           );
+
         // Most likely refreshed when the answer was sent to server
         if (chatChunks().at(-1)?.input?.answer)
           sendMessage(chatChunks().at(-1)?.input?.answer);
       }
+
       await popClientSideActions();
     })();
   });
 
-  const getScrollContainer = () =>
+  const getScrollContainer = () => {
     botContainer()?.querySelector(".scrollable-container");
+  };
 
   const cleanupRecoveredChatChunks = () => {
     // Remove aborted streaming message

@@ -37,7 +37,9 @@ export const getInitialChatReplyFromStorage = (
     const rawInitialChatReply =
       sessionStorage.getItem(`typebot-${typebotId}-initialChatReply`) ??
       localStorage.getItem(`typebot-${typebotId}-initialChatReply`);
+
     if (!rawInitialChatReply) return;
+
     return JSON.parse(rawInitialChatReply) as StartChatResponse;
   } catch {
     /* empty */
@@ -55,6 +57,7 @@ export const setInitialChatReplyInStorage = (
 ) => {
   try {
     const rawInitialChatReply = JSON.stringify(initialChatReply);
+
     getStorage(storage).setItem(
       `typebot-${typebotId}-initialChatReply`,
       rawInitialChatReply,

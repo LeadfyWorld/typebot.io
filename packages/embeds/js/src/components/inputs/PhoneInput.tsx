@@ -24,10 +24,6 @@ export const PhoneInput = (props: PhoneInputProps) => {
     isEmpty(props.defaultCountryCode) ? "INT" : props.defaultCountryCode,
   );
 
-  console.log(props.defaultCountryCode);
-
-  console.log(selectedCountryCode());
-
   const [inputValue, setInputValue] = createSignal(props.defaultValue ?? "");
 
   let inputRef: HTMLInputElement | undefined;
@@ -66,12 +62,14 @@ export const PhoneInput = (props: PhoneInputProps) => {
     )?.dial_code;
     if (checkIfInputIsValid()) {
       const val = inputRef?.value ?? inputValue();
-      props.onSubmit({
-        type: "text",
-        value: val.startsWith("+")
-          ? val
-          : `${selectedCountryDialCode ?? ""}${val}`,
-      });
+      if (props.onSubmit) {
+        props.onSubmit({
+          type: "text",
+          value: val.startsWith("+")
+            ? val
+            : `${selectedCountryDialCode ?? ""}${val}`,
+        });
+      }
     } else inputRef?.focus();
   };
 

@@ -1,5 +1,11 @@
+// @ts-nocheck
 import { BotContainerContext } from "@/contexts/BotContainerContext";
+import {
+  ChatContainerSizeContext,
+  createChatContainerProviderValue,
+} from "@/contexts/ChatContainerSizeContext";
 import { textColor } from "@/lib/textColor";
+import { setChatLeadQuery } from "@/queries/continueChatQuery";
 import { startChatQuery } from "@/queries/startChatQuery";
 import type { BotContext } from "@/types";
 import { CorsError } from "@/utils/CorsError";
@@ -30,6 +36,7 @@ import {
   defaultSystemMessages,
 } from "@typebot.io/settings/constants";
 import {
+  defaultContainerBackgroundColor,
   defaultFontFamily,
   defaultFontType,
   defaultProgressBarPosition,
@@ -46,15 +53,23 @@ import {
   onCleanup,
 } from "solid-js";
 import { Portal } from "solid-js/web";
-import { buttonVariants } from "./Button";
+import { Button, buttonVariants } from "./Button";
 import { ChatContainer } from "./ConversationContainer/ChatContainer";
 import { ErrorMessage } from "./ErrorMessage";
 import { ProgressBar } from "./ProgressBar";
 import { CloseIcon } from "./icons/CloseIcon";
+import { EmailInput } from "./inputs/EmailInput";
+import { PhoneInput } from "./inputs/PhoneInput";
+import { TextInput } from "./inputs/TextInput";
 
 export type BotProps = {
   id?: string;
   typebot: string | StartTypebot | undefined;
+  leadInfo: null | {
+    name: string;
+    email: string;
+    phone: string;
+  };
   isPreview?: boolean;
   resultId?: string;
   prefilledVariables?: Record<string, unknown>;
@@ -64,6 +79,7 @@ export type BotProps = {
   progressBarRef?: HTMLDivElement;
   startFrom?: StartFrom;
   sessionId?: string;
+  setLead: (lead: { name: string; email: string; phone: string }) => void;
   onNewInputBlock?: (inputBlock: InputBlock) => void;
   onAnswer?: (answer: { message: string; blockId: string }) => void;
   onInit?: () => void;
@@ -96,6 +112,7 @@ export const Bot = (props: BotProps & { class?: string }) => {
       typeof props.typebot !== "string" || (props.isPreview ?? false);
     const resultIdInStorage =
       getExistingResultIdFromStorage(typebotIdFromProps);
+
     const { data, error } = await startChatQuery({
       stripeRedirectStatus: urlParams.get("redirect_status") ?? undefined,
       typebot: props.typebot,
@@ -109,6 +126,7 @@ export const Bot = (props: BotProps & { class?: string }) => {
       startFrom: props.startFrom,
       sessionId: props.sessionId,
     });
+
     if (error instanceof HTTPError) {
       if (isPreview) {
         return setError(
@@ -176,6 +194,8 @@ export const Bot = (props: BotProps & { class?: string }) => {
           new Date(data.typebot.publishedAt).getTime()
         ) {
           setInitialChatReply(initialChatInStorage);
+
+          props.setLead(data.conversationLead);
         } else {
           // Restart chat by resetting remembered state
           wipeExistingChatStateInStorage(data.typebot.id);
@@ -184,6 +204,8 @@ export const Bot = (props: BotProps & { class?: string }) => {
             typebotId: data.typebot.id,
             storage,
           });
+
+          props.setLead(data.conversationLead);
         }
       } else {
         setInitialChatReply(data);
@@ -191,11 +213,14 @@ export const Bot = (props: BotProps & { class?: string }) => {
           typebotId: data.typebot.id,
           storage,
         });
+
+        props.setLead(data.conversationLead);
       }
       props.onChatStatePersisted?.(true);
     } else {
       wipeExistingChatStateInStorage(data.typebot.id);
       setInitialChatReply(data);
+      props.setLead(data.conversationLead);
       if (data.input?.id && props.onNewInputBlock)
         props.onNewInputBlock(data.input);
       if (data.logs) props.onNewLogs?.(data.logs);
@@ -244,48 +269,100 @@ export const Bot = (props: BotProps & { class?: string }) => {
         keyed
       >
         {(initialChatReply) => (
-          <BotContent
-            class={props.class}
-            initialChatReply={{
-              ...initialChatReply,
-              typebot: {
-                ...initialChatReply.typebot,
-                settings:
-                  typeof props.typebot === "string" || !props.typebot
-                    ? initialChatReply.typebot.settings
-                    : props.typebot?.settings,
-                theme:
-                  typeof props.typebot === "string" || !props.typebot
-                    ? initialChatReply.typebot.theme
-                    : props.typebot?.theme,
-              },
-            }}
-            context={{
-              apiHost: props.apiHost,
-              wsHost: props.wsHost,
-              isPreview:
-                typeof props.typebot !== "string" || (props.isPreview ?? false),
-              resultId: initialChatReply.resultId,
-              sessionId: initialChatReply.sessionId,
-              typebot: initialChatReply.typebot,
-              storage:
-                initialChatReply.typebot.settings.general?.rememberUser
-                  ?.isEnabled &&
-                !(
-                  typeof props.typebot !== "string" ||
-                  (props.isPreview ?? false)
-                )
-                  ? (initialChatReply.typebot.settings.general?.rememberUser
-                      ?.storage ?? defaultSettings.general.rememberUser.storage)
-                  : undefined,
-            }}
-            progressBarRef={props.progressBarRef}
-            onNewInputBlock={props.onNewInputBlock}
-            onNewLogs={props.onNewLogs}
-            onAnswer={props.onAnswer}
-            onEnd={props.onEnd}
-            onScriptExecutionSuccess={props.onScriptExecutionSuccess}
-          />
+          <>
+            {props.leadInfo ? (
+              <BotContent
+                class={props.class}
+                initialChatReply={{
+                  ...initialChatReply,
+                  typebot: {
+                    ...initialChatReply.typebot,
+                    settings:
+                      typeof props.typebot === "string" || !props.typebot
+                        ? initialChatReply.typebot.settings
+                        : props.typebot?.settings,
+                    theme:
+                      typeof props.typebot === "string" || !props.typebot
+                        ? initialChatReply.typebot.theme
+                        : props.typebot?.theme,
+                  },
+                }}
+                context={{
+                  apiHost: props.apiHost,
+                  wsHost: props.wsHost,
+                  isPreview:
+                    typeof props.typebot !== "string" ||
+                    (props.isPreview ?? false),
+                  resultId: initialChatReply.resultId,
+                  sessionId: initialChatReply.sessionId,
+                  typebot: initialChatReply.typebot,
+                  storage:
+                    initialChatReply.typebot.settings.general?.rememberUser
+                      ?.isEnabled &&
+                    !(
+                      typeof props.typebot !== "string" ||
+                      (props.isPreview ?? false)
+                    )
+                      ? (initialChatReply.typebot.settings.general?.rememberUser
+                          ?.storage ??
+                        defaultSettings.general.rememberUser.storage)
+                      : undefined,
+                }}
+                progressBarRef={props.progressBarRef}
+                onNewInputBlock={props.onNewInputBlock}
+                onNewLogs={props.onNewLogs}
+                onAnswer={props.onAnswer}
+                onEnd={props.onEnd}
+                onScriptExecutionSuccess={props.onScriptExecutionSuccess}
+              />
+            ) : (
+              <BotFormContent
+                class={props.class}
+                initialChatReply={{
+                  ...initialChatReply,
+                  typebot: {
+                    ...initialChatReply.typebot,
+                    settings:
+                      typeof props.typebot === "string" || !props.typebot
+                        ? initialChatReply.typebot.settings
+                        : props.typebot?.settings,
+                    theme:
+                      typeof props.typebot === "string" || !props.typebot
+                        ? initialChatReply.typebot.theme
+                        : props.typebot?.theme,
+                  },
+                }}
+                setLead={props.setLead}
+                context={{
+                  apiHost: props.apiHost,
+                  wsHost: props.wsHost,
+                  isPreview:
+                    typeof props.typebot !== "string" ||
+                    (props.isPreview ?? false),
+                  resultId: initialChatReply.resultId,
+                  sessionId: initialChatReply.sessionId,
+                  typebot: initialChatReply.typebot,
+                  storage:
+                    initialChatReply.typebot.settings.general?.rememberUser
+                      ?.isEnabled &&
+                    !(
+                      typeof props.typebot !== "string" ||
+                      (props.isPreview ?? false)
+                    )
+                      ? (initialChatReply.typebot.settings.general?.rememberUser
+                          ?.storage ??
+                        defaultSettings.general.rememberUser.storage)
+                      : undefined,
+                }}
+                progressBarRef={props.progressBarRef}
+                onNewInputBlock={props.onNewInputBlock}
+                onNewLogs={props.onNewLogs}
+                onAnswer={props.onAnswer}
+                onEnd={props.onEnd}
+                onScriptExecutionSuccess={props.onScriptExecutionSuccess}
+              />
+            )}
+          </>
         )}
       </Show>
     </>
@@ -344,18 +421,6 @@ const BotContent = (props: BotContentProps) => {
   });
 
   return (
-    // <BotWSContext.Provider
-    //   value={
-    //     null as unknown as PartySocket
-    //     // new PartySocket({
-    //     //   host: props.context.wsHost as string,
-    //     //   room: getRoomName({
-    //     //     sessionId: props.context.sessionId as string,
-    //     //     // resultId: props.context.resultId as string,
-    //     //   }),
-    //     // })
-    //   }
-    // >
     <BotContainerContext.Provider value={() => botContainer}>
       <div
         ref={botContainer}
@@ -465,6 +530,452 @@ const BotContent = (props: BotContentProps) => {
         </div>
       </div>
     </BotContainerContext.Provider>
-    // </BotWSContext.Provider>
+  );
+};
+
+type BotFormContentProps = {
+  setLead: (values: { name: string; email: string; phone: string }) => void;
+  initialChatReply: StartChatResponse;
+  context: BotContext;
+  class?: string;
+  progressBarRef?: HTMLDivElement;
+  onNewInputBlock?: (inputBlock: InputBlock) => void;
+  onAnswer?: (answer: { message: string; blockId: string }) => void;
+  onEnd?: () => void;
+  onNewLogs?: (logs: LogInSession[]) => void;
+  onScriptExecutionSuccess?: (message: string) => void;
+};
+
+const BotFormContent = (props: BotFormContentProps) => {
+  let chatContainer: HTMLDivElement | undefined;
+
+  const [success, setSuccess] = createSignal(false);
+
+  const [isLoading, setIsLoading] = createSignal(false);
+
+  const [error, setError] = createSignal<{
+    name: boolean;
+    email: boolean;
+    phone: boolean;
+  }>({
+    name: false,
+    email: false,
+    phone: false,
+  });
+
+  let botContainer: HTMLDivElement | undefined;
+
+  let botContainerElement: HTMLDivElement | undefined;
+
+  createEffect(() => {
+    injectFont(
+      props.initialChatReply.typebot.theme.general?.font ?? {
+        type: defaultFontType,
+        family: defaultFontFamily,
+      },
+    );
+
+    if (!botContainer) {
+      return;
+    }
+
+    setCssVariablesValue({
+      theme: mergeThemes(
+        props.initialChatReply.typebot.theme,
+        props.initialChatReply.dynamicTheme,
+      ),
+      container: botContainer,
+      isPreview: props.context.isPreview,
+      typebotVersion: isTypebotVersionAtLeastV6(
+        props.initialChatReply.typebot.version,
+      )
+        ? props.initialChatReply.typebot.version
+        : "6",
+    });
+  });
+
+  const botContainerHeight = createMemo(() => {
+    if (!botContainer) return "100%";
+    return botContainer.clientHeight;
+  });
+
+  const chatContainerSize = createChatContainerProviderValue(
+    () => chatContainer,
+  );
+
+  const isChatContainerTransparent = createMemo(
+    () =>
+      (props.initialChatReply.typebot.theme.chat?.container?.backgroundColor ??
+        defaultContainerBackgroundColor) === "transparent",
+  );
+
+  const onSubmit = async (e: Event) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+
+    const formData = new FormData(e.target as HTMLFormElement);
+
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const phone = formData.get("phone") as string;
+
+    if (!name || !email || !phone) {
+      setError({
+        name: !name,
+        email: !email,
+        phone: !phone,
+      });
+
+      setIsLoading(false);
+
+      return;
+    }
+
+    setError({
+      name: false,
+      email: false,
+      phone: false,
+    });
+
+    const result = await setChatLeadQuery({
+      apiHost: props.context.apiHost,
+      sessionId: props.initialChatReply.sessionId,
+      leadInfo: {
+        name: name,
+        email: email,
+        phone: phone,
+      },
+    });
+
+    console.log("result", result.data?.leadInfo);
+
+    props.setLead(result.data?.leadInfo);
+  };
+
+  return (
+    <BotContainerContext.Provider value={() => botContainer}>
+      <div
+        ref={botContainer}
+        class={cx(
+          "relative flex w-full overflow-hidden h-full text-base flex-col justify-center items-center typebot-container typebot-pre-form-container",
+          props.class,
+        )}
+        style={{
+          "--bot-container-height": botContainerHeight(),
+        }}
+      >
+        <ChatContainerSizeContext.Provider value={chatContainerSize}>
+          <div
+            class={cx(
+              "w-full h-full px-[calc((100%-var(--typebot-chat-container-max-width))/2)]",
+              // If chat container is transparent, we make sure the scroll area takes the entire width of the container
+              isChatContainerTransparent()
+                ? "overflow-y-auto scroll-smooth scrollable-container"
+                : undefined,
+            )}
+            style={{
+              padding: "15px",
+              "padding-bottom": "0px",
+              flex: 1,
+              height: "100%",
+              overflow: "auto",
+            }}
+          >
+            <div
+              ref={chatContainer}
+              style={{
+                "border-radius": "15px",
+                background: "#fff",
+                height: "100%",
+              }}
+            >
+              <div class="w-full flex flex-col">
+                <div
+                  class={cx(
+                    "@container relative typebot-chat-view w-full min-h-full flex flex-col items-center @xs:min-h-chat-container @xs:max-h-chat-container @xs:rounded-chat-container pt-5  max-w-chat-container h-full",
+                  )}
+                  style={{
+                    "border-radius": "10px",
+                    padding: "0",
+                    width: "100%",
+                    "border-bottom-left-radius": "0",
+                    "border-bottom-right-radius": "0",
+                  }}
+                >
+                  <div
+                    class="relative px-2 text-center"
+                    style={{
+                      // background:
+                      //   props.context.typebot.theme.chat?.container?.backgroundColor,
+                      "border-radius": "16px",
+                      "border-bottom-left-radius": 0,
+                      "border-bottom-right-radius": 0,
+                      position: "relative",
+                      transition: "margin 0.5s ease-in-out",
+                      height: "auto",
+                      "padding-top": "60px",
+                      "padding-bottom": "65px",
+                      "margin-top": success() ? "-500px" : "0",
+                    }}
+                  >
+                    {!success() && (
+                      <h1 class="text-3xl font-extrabold text-gray-900">
+                        Olá! <span class="inline-block">👋</span> Vamos
+                        conversar?
+                      </h1>
+                    )}
+
+                    {!success() && (
+                      <p class="text-sm text-gray-700 mt-2">
+                        Que bom te ver, estou pronto para te ajudar!
+                        <br />
+                        Vamos juntos encontrar o que você precisa?
+                      </p>
+                    )}
+
+                    {!success() && (
+                      <div
+                        class="flex items-center bg-gray-100 text-sm font-semibold rounded-full px-4 py-2 -mt-4 mx-6 shadow w-fit"
+                        style={{
+                          "z-index": 99999,
+                          background: "#F0F0F0",
+                          "font-size": "12px",
+                          position: "absolute",
+                          bottom: "-20px",
+                          padding: "5px",
+                          "padding-right": "8px",
+                          "justify-self": "anchor-center",
+                          color: "var(--typebot-input-color)",
+                        }}
+                      >
+                        <span class="w-6 h-6 rounded-full bg-lime-300 flex items-center justify-center text-lg mr-2">
+                          💬
+                        </span>
+                        Preencha os campos abaixo para iniciar
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div
+                  // class="overflow-y-auto relative scrollable-container scroll-smooth w-full flex flex-col items-center"
+                  style={{
+                    flex: 1,
+                    background: "#fff",
+                  }}
+                >
+                  <div class="max-w-chat-container w-full flex flex-col gap-2">
+                    {!success() && (
+                      <form
+                        onSubmit={onSubmit}
+                        class="px-6 space-y-4"
+                        style={{
+                          "padding-top": "30px",
+                        }}
+                      >
+                        <div>
+                          <label
+                            for="name"
+                            class="block text-sm font-semibold mb-1"
+                            style={{
+                              color: textColor(
+                                props.context.typebot.theme.general?.background
+                                  ?.content || "#fff",
+                              ),
+                            }}
+                          >
+                            Seu nome
+                          </label>
+
+                          <TextInput
+                            name="name"
+                            error={error().name}
+                            context={props.context}
+                          />
+
+                          {error().name && (
+                            <div
+                              class="flex items-center text-red-600 text-xs"
+                              style={{
+                                color: "#FF4949",
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 mr-1"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.591c.75 1.334-.214 2.99-1.742 2.99H3.48c-1.528 0-2.492-1.656-1.742-2.99L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-2a.75.75 0 01-.75-.75V8a.75.75 0 011.5 0v2.25c0 .414-.336.75-.75.75z"
+                                  clip-rule="evenodd"
+                                />
+                              </svg>
+
+                              <span>Ops! O seu nome não foi informado.</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <label
+                            for="email"
+                            class="block text-sm font-semibold mb-1"
+                            style={{
+                              color: textColor(
+                                props.context.typebot.theme.general?.background
+                                  ?.content || "#fff",
+                              ),
+                            }}
+                          >
+                            Seu e-mail
+                          </label>
+
+                          {/* <div>
+                  <div class="max-w-md mx-auto font-sans">
+                    <label class="block text-gray-900 font-semibold text-sm mb-1">
+                      Seu e-mail
+                      <span class="font-normal text-gray-500">
+                        (aquele que você sempre usa)
+                      </span>
+                    </label>
+
+                    <input
+                      type="email"
+                      value="jorge@xyzconcessionaria..com.br"
+                      class="w-full px-4 py-3 rounded-2xl bg-gray-100 text-red-600 border-2 border-red-500 focus:outline-none"
+                      readonly
+                    />
+                  </div>
+                </div> */}
+
+                          <EmailInput
+                            name="email"
+                            error={error().email}
+                            context={props.context}
+                          />
+
+                          {error().email && (
+                            <div
+                              class="flex items-center text-red-600 text-xs"
+                              style={{
+                                color: "#FF4949",
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 mr-1"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.591c.75 1.334-.214 2.99-1.742 2.99H3.48c-1.528 0-2.492-1.656-1.742-2.99L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-2a.75.75 0 01-.75-.75V8a.75.75 0 011.5 0v2.25c0 .414-.336.75-.75.75z"
+                                  clip-rule="evenodd"
+                                />
+                              </svg>
+
+                              <span>
+                                Ops! O e-mail informado parece estar incorreto.
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <label
+                            for="phone"
+                            class="block text-sm font-semibold mb-1"
+                            style={{
+                              color: textColor(
+                                props.context.typebot.theme.general?.background
+                                  ?.content || "#fff",
+                              ),
+                            }}
+                          >
+                            Seu telefone{" "}
+                            <span class="text-sm font-normal">(com DDD)</span>
+                          </label>
+
+                          <PhoneInput
+                            name="phone"
+                            error={error().phone}
+                            context={props.context}
+                            defaultCountryCode="BR"
+                          />
+
+                          {error().phone && (
+                            <div
+                              class="flex items-center text-red-600 text-xs"
+                              style={{
+                                color: "#FF4949",
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 mr-1"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.591c.75 1.334-.214 2.99-1.742 2.99H3.48c-1.528 0-2.492-1.656-1.742-2.99L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-2a.75.75 0 01-.75-.75V8a.75.75 0 011.5 0v2.25c0 .414-.336.75-.75.75z"
+                                  clip-rule="evenodd"
+                                />
+                              </svg>
+
+                              <span>
+                                Ops! O telefone informado parece estar
+                                incorreto.
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <Button
+                          type="submit"
+                          fullWidth
+                        >
+                          Iniciar conversa
+                        </Button>
+                      </form>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ChatContainerSizeContext.Provider>
+
+        <div
+          style={{
+            display: "flex",
+            "align-self": "center",
+            "align-items": "center",
+            gap: "10px",
+            color: textColor(
+              props.context.typebot.theme.general?.background?.content ||
+                "#fff",
+            ),
+            "font-size": "10px",
+            width: "100%",
+            height: "40px",
+            "justify-content": "center",
+          }}
+        >
+          <span>Um produto</span>
+
+          <span>
+            <img
+              src="https://leadfy.me/wp-content/uploads/2025/02/logoLeadFy.svg"
+              style={{ width: "50px" }}
+              alt="Leadfy Logo"
+            />
+          </span>
+        </div>
+      </div>
+    </BotContainerContext.Provider>
   );
 };

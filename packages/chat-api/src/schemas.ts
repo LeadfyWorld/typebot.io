@@ -21,8 +21,7 @@ import { timeInputSchema } from "@typebot.io/blocks-inputs/time/schema";
 import { urlInputSchema } from "@typebot.io/blocks-inputs/url/schema";
 import { logInSessionSchema } from "@typebot.io/logs/schemas";
 import { settingsSchema } from "@typebot.io/settings/schemas";
-import { themeSchema } from "@typebot.io/theme/schemas";
-import { dynamicThemeSchema } from "@typebot.io/theme/schemas";
+import { dynamicThemeSchema, themeSchema } from "@typebot.io/theme/schemas";
 import { preprocessTypebot } from "@typebot.io/typebot/preprocessTypebot";
 import {
   typebotV5Schema,
@@ -339,6 +338,7 @@ const chatResponseBaseSchema = z.object({
       "The sent message is validated and formatted on the backend. For example, if for a date input you replied something like `tomorrow`, the backend will convert it to a date string. This field returns the formatted message.",
     ),
   messages: z.array(chatBubbleSchema),
+  chunks: z.any().optional(),
   input: z
     .union([
       z.discriminatedUnion("type", [
