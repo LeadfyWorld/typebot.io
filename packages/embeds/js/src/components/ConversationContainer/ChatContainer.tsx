@@ -495,7 +495,7 @@ export const ChatContainer = (props: Props) => {
         <div
           ref={chatContainer}
           class={cx(
-            "@container relative typebot-chat-view w-full min-h-full flex flex-col items-center @xs:min-h-chat-container @xs:max-h-chat-container @xs:rounded-chat-container pt-5  max-w-chat-container h-full",
+            "@container typebot-chat-view w-full min-h-full flex flex-col items-center @xs:min-h-chat-container @xs:max-h-chat-container @xs:rounded-chat-container pt-5  max-w-chat-container h-full",
             isChatContainerTransparent()
               ? undefined
               : "overflow-y-auto scroll-smooth scrollable-container",

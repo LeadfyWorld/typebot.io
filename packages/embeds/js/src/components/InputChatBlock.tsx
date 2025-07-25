@@ -82,10 +82,14 @@ export const InputChatBlock = (props: Props) => {
           style={{
             "border-top": "1px solid #ebebeb",
             position: "absolute",
-            bottom: "8px",
-            width: "96%",
-            "padding-top": "6px",
+            bottom: "40px",
+            width: "calc(100% - 30px)",
             "justify-self": "anchor-center",
+            background:
+              props.context.typebot.theme.general?.background?.content,
+            padding: "5px 0px",
+            "border-bottom-left-radius": "10px",
+            "border-bottom-right-radius": "10px",
           }}
         >
           <div

@@ -602,3 +602,11 @@ select option {
 .typebot-buttons-input > .typebot-input {
   max-width: 350px;
 }
+
+.text-gray-500 {
+  color: var(--color-gray-500);
+}
+
+.text-gray-800 {
+  color: var(--color-gray-800);
+}

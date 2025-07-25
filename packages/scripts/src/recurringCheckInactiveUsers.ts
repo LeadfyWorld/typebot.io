@@ -1,6 +1,5 @@
 import prisma from "@typebot.io/prisma/withReadReplica";
 import ky from "ky";
-import { promptAndSetEnvironment } from "./utils";
 
 const main = async () => {
   let url = `https://eu.posthog.com/api/projects/${process.env.POSTHOG_PROJECT_ID}/cohorts/${process.env.POSTHOG_INACTIVE_USERS_COHORT_ID}/persons`;
@@ -36,6 +35,7 @@ const main = async () => {
     const allWorkspacesAreInactive = user.workspaces.every((workspace) =>
       workspace.workspace.members.every((member) => member.user.id === user.id),
     );
+
     if (allWorkspacesAreInactive) {
       console.log(user.id);
     }

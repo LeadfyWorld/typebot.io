@@ -61,8 +61,10 @@ export const TextInput = (props: Props) => {
       mediaRecorder.stop();
       return;
     }
+
     if (checkIfInputIsValid()) {
       let attachments: Attachment[] | undefined;
+
       if (selectedFiles().length > 0) {
         setUploadProgress(undefined);
         const urls = await uploadFiles({
@@ -89,6 +91,7 @@ export const TextInput = (props: Props) => {
           )
           .filter(isDefined);
       }
+
       props.onSubmit({
         type: "text",
         value: inputRef?.value ?? inputValue(),
@@ -103,8 +106,13 @@ export const TextInput = (props: Props) => {
   };
 
   const submitIfCtrlEnter = (e: KeyboardEvent) => {
-    if (!props.block.options?.isLong) return;
-    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
+    if (!props.block.options?.isLong) {
+      return;
+    }
+
+    if (e.key === "Enter" && !e.metaKey && !e.shiftKey && !e.ctrlKey) {
+      submit();
+    }
   };
 
   onMount(() => {
@@ -112,6 +120,7 @@ export const TextInput = (props: Props) => {
       inputRef.focus({
         preventScroll: true,
       });
+
     window.addEventListener("message", processIncomingEvent);
   });
 
@@ -234,13 +243,16 @@ export const TextInput = (props: Props) => {
       )
         .filter(isDefined)
         .map((url) => url.url);
+
       props.onSubmit({
         type: "recording",
         url: urls[0],
         blobUrl: URL.createObjectURL(audioFile),
       });
     };
+
     mediaRecorder.start();
+
     setRecordingStatus("started");
   };
 
