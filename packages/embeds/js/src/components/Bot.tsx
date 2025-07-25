@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { BotContainerContext } from "@/contexts/BotContainerContext";
 import {
   ChatContainerSizeContext,
@@ -79,7 +78,9 @@ export type BotProps = {
   progressBarRef?: HTMLDivElement;
   startFrom?: StartFrom;
   sessionId?: string;
-  setLead: (lead: { name: string; email: string; phone: string }) => void;
+  setLead: (
+    lead: { name: string; email: string; phone: string } | null,
+  ) => void;
   onNewInputBlock?: (inputBlock: InputBlock) => void;
   onAnswer?: (answer: { message: string; blockId: string }) => void;
   onInit?: () => void;
@@ -534,7 +535,9 @@ const BotContent = (props: BotContentProps) => {
 };
 
 type BotFormContentProps = {
-  setLead: (values: { name: string; email: string; phone: string }) => void;
+  setLead: (
+    values: { name: string; email: string; phone: string } | null,
+  ) => void;
   initialChatReply: StartChatResponse;
   context: BotContext;
   class?: string;
@@ -648,9 +651,7 @@ const BotFormContent = (props: BotFormContentProps) => {
       },
     });
 
-    console.log("result", result.data?.leadInfo);
-
-    props.setLead(result.data?.leadInfo);
+    props.setLead(result.data?.leadInfo || null);
   };
 
   return (

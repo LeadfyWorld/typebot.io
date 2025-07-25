@@ -10,12 +10,12 @@ import { cx } from "@typebot.io/ui/lib/cva";
 import { Show, createSignal, onCleanup, onMount } from "solid-js";
 
 type Props = {
-  block: TextInputBlock;
+  block?: TextInputBlock;
   defaultValue?: string;
   context: BotContext;
   name: string;
   error?: boolean;
-  onSubmit: (value: InputSubmitContent) => void;
+  onSubmit?: (value: InputSubmitContent) => void;
 };
 
 export const TextInput = (props: Props) => {

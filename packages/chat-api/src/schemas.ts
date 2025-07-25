@@ -396,6 +396,13 @@ export const startChatResponseSchema = z
       .string()
       .describe("To save and use for /continueChat requests."),
     resultId: z.string().optional(),
+    conversationLead: z
+      .object({
+        name: z.string(),
+        email: z.string(),
+        phone: z.string(),
+      })
+      .nullable(),
     typebot: z.object({
       id: z.string(),
       version: z.union([

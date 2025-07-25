@@ -24,7 +24,7 @@ export const continueChatQuery = async ({
         {
           json: {
             message,
-            conversationId: gaGlobal.vid,
+            conversationId: window.gaGlobal?.vid,
           },
           timeout: false,
         },
@@ -58,7 +58,7 @@ export const setChatLeadQuery = async ({
         }/api/v1/sessions/${sessionId}/setLead`,
         {
           json: {
-            conversationId: gaGlobal.vid,
+            conversationId: window.gaGlobal?.vid,
             leadInfo,
           },
           timeout: false,

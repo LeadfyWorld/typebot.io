@@ -88,7 +88,7 @@ export async function startChatQuery({
           prefilledVariables,
           resultId,
           isOnlyRegistering: false,
-          conversationId: gaGlobal.vid,
+          conversationId: window.gaGlobal?.vid,
         } satisfies Omit<
           StartChatInput,
           "publicId" | "textBubbleContentFormat"
@@ -130,7 +130,7 @@ const resumeChatAfterPaymentRedirect = async ({
         {
           json: {
             message: stripeRedirectStatus === "failed" ? "fail" : "Success",
-            conversationId: gaGlobal.vid,
+            conversationId: window.gaGlobal?.vid,
           },
           timeout: false,
         },
@@ -174,7 +174,7 @@ const startPreviewChat = async ({
             typebot,
             prefilledVariables,
             sessionId,
-            conversationId: gaGlobal.vid,
+            conversationId: window.gaGlobal?.vid,
           } satisfies Omit<
             StartPreviewChatInput,
             "typebotId" | "isOnlyRegistering" | "textBubbleContentFormat"

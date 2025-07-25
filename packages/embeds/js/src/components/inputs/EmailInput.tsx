@@ -6,12 +6,12 @@ import { guessDeviceIsMobile } from "@typebot.io/lib/guessDeviceIsMobile";
 import { createSignal, onCleanup, onMount } from "solid-js";
 
 type Props = {
-  block: EmailInputBlock;
+  block?: EmailInputBlock;
   defaultValue?: string;
   name: string;
   context: BotContext;
   error?: boolean;
-  onSubmit: (value: InputSubmitContent) => void;
+  onSubmit?: (value: InputSubmitContent) => void;
 };
 
 export const EmailInput = (props: Props) => {
@@ -24,9 +24,16 @@ export const EmailInput = (props: Props) => {
     inputRef?.value !== "" && inputRef?.reportValidity();
 
   const submit = () => {
-    if (checkIfInputIsValid())
-      props.onSubmit({ type: "text", value: inputRef?.value ?? inputValue() });
-    else inputRef?.focus();
+    if (checkIfInputIsValid()) {
+      if (props.onSubmit) {
+        props.onSubmit({
+          type: "text",
+          value: inputRef?.value ?? inputValue(),
+        });
+      }
+    } else {
+      inputRef?.focus();
+    }
   };
 
   const submitWhenEnter = (e: KeyboardEvent) => {
