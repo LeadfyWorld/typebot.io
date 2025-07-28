@@ -102,6 +102,8 @@ export const startChat = async ({
 
   return {
     sessionId: session.id,
+    conversationLead: null,
+    virtualAssistantId: null,
     typebot: {
       id: typebot.id,
       version: typebot.version,

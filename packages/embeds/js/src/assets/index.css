@@ -140,9 +140,6 @@ pre {
   border-radius: 20px;
 }
 
-.typebot-pre-form-container input {
-}
-
 .typebot-chat-view {
   background-color: rgba(
     var(--typebot-chat-container-bg-rgb),

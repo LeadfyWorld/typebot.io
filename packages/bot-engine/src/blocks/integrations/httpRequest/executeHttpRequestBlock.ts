@@ -208,7 +208,7 @@ export const parseWebhookAttributes = async ({
 
 export const executeHttpRequest = async (
   webhook: ParsedWebhook,
-  params: Params = {},
+  params: Params,
   sessionStore: SessionStore,
   state?: SessionState,
 ): Promise<{
@@ -321,7 +321,9 @@ export const executeHttpRequest = async (
       statusCode: 500,
       data: { message: `Error from Typebot server: ${error}` },
     };
+
     console.error(error);
+
     logs.push({
       status: "error",
       description: `Webhook failed to execute.`,

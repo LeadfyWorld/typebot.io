@@ -1,6 +1,6 @@
 export const textColor = (background: string) => {
   // Simple luminance calculation for hex/rgb(a) backgrounds
-  let bg = background.trim();
+  const bg = background.trim();
 
   // Handle hex
   if (bg.startsWith("#")) {
@@ -13,9 +13,9 @@ export const textColor = (background: string) => {
         .join("");
     }
 
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
+    const r = Number.parseInt(hex.substring(0, 2), 16);
+    const g = Number.parseInt(hex.substring(2, 4), 16);
+    const b = Number.parseInt(hex.substring(4, 6), 16);
     const luminance =
       (0.2126 * r) / 255 + (0.7152 * g) / 255 + (0.0722 * b) / 255;
 
@@ -27,9 +27,9 @@ export const textColor = (background: string) => {
     const match = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/);
 
     if (match) {
-      const r = parseInt(match[1], 10);
-      const g = parseInt(match[2], 10);
-      const b = parseInt(match[3], 10);
+      const r = Number.parseInt(match[1], 10);
+      const g = Number.parseInt(match[2], 10);
+      const b = Number.parseInt(match[3], 10);
       const luminance =
         (0.2126 * r) / 255 + (0.7152 * g) / 255 + (0.0722 * b) / 255;
 

@@ -4,8 +4,7 @@ import {
   createChatContainerProviderValue,
 } from "@/contexts/ChatContainerSizeContext";
 import { textColor } from "@/lib/textColor";
-import { setChatLeadQuery } from "@/queries/continueChatQuery";
-import { startChatQuery } from "@/queries/startChatQuery";
+import { setChatLeadQuery, startChatQuery } from "@/queries/startChatQuery";
 import type { BotContext } from "@/types";
 import { CorsError } from "@/utils/CorsError";
 import { mergeThemes } from "@/utils/dynamicTheme";
@@ -157,6 +156,7 @@ export const Bot = (props: BotProps & { class?: string }) => {
     if (!data) {
       if (error) {
         console.error(error);
+
         if (isPreview) {
           return setError(
             new Error(`Error! Could not reach server. Check your connection.`, {
@@ -643,7 +643,7 @@ const BotFormContent = (props: BotFormContentProps) => {
 
     const result = await setChatLeadQuery({
       apiHost: props.context.apiHost,
-      sessionId: props.initialChatReply.sessionId,
+      typebot: props.initialChatReply.virtualAssistantId,
       leadInfo: {
         name: name,
         email: email,

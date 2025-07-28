@@ -88,13 +88,9 @@ RUN bunx turbo@2.4.5-canary.7 prune "${SCOPE}" --docker
 FROM base AS development
 ARG SCOPE
 WORKDIR /app
-
 COPY . .
-
 RUN bun install
-
 CMD ["bun", "run", "dev"]
-
 
 # =============== INSTALL & BUILD =================
 

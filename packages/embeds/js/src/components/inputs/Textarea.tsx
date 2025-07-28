@@ -27,17 +27,17 @@ export const Textarea = (props: TextareaProps) => {
     />
   );
 
-  return (
-    <textarea
-      ref={local.ref}
-      class="focus:outline-none bg-transparent px-4 py-4 flex-1 w-full text-input"
-      rows={6}
-      data-testid="textarea"
-      required
-      autofocus={!isMobile}
-      inputmode={local.inputmode}
-      onInput={(e) => local.onInput(e.currentTarget.value)}
-      {...others}
-    />
-  );
+  // return (
+  //   <textarea
+  //     ref={local.ref}
+  //     class="focus:outline-none bg-transparent px-4 py-4 flex-1 w-full text-input"
+  //     rows={6}
+  //     data-testid="textarea"
+  //     required
+  //     autofocus={!isMobile}
+  //     inputmode={local.inputmode}
+  //     onInput={(e) => local.onInput(e.currentTarget.value)}
+  //     {...others}
+  //   />
+  // );
 };

@@ -338,7 +338,12 @@ const chatResponseBaseSchema = z.object({
       "The sent message is validated and formatted on the backend. For example, if for a date input you replied something like `tomorrow`, the backend will convert it to a date string. This field returns the formatted message.",
     ),
   messages: z.array(chatBubbleSchema),
-  chunks: z.any().optional(),
+  chunks: z
+    .any()
+    .optional()
+    .describe(
+      "If the chat is streamed, this field will contain the streamed chunks of the last message.",
+    ),
   input: z
     .union([
       z.discriminatedUnion("type", [
@@ -396,6 +401,7 @@ export const startChatResponseSchema = z
       .string()
       .describe("To save and use for /continueChat requests."),
     resultId: z.string().optional(),
+    virtualAssistantId: z.string().nullable(),
     conversationLead: z
       .object({
         name: z.string(),

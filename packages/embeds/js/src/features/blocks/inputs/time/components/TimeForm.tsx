@@ -66,10 +66,8 @@ export const TimeForm = (props: Props) => {
           data-testid="time"
         />
       </div>
-      <SendButton
-        type="button"
-        on:click={submit}
-      >
+
+      <SendButton type="button" on:click={submit}>
         {props.block?.labels?.button}
       </SendButton>
     </div>

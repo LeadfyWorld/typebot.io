@@ -72,10 +72,8 @@ export const UrlInput = (props: Props) => {
           autocomplete="url"
         />
       </div>
-      <SendButton
-        type="button"
-        on:click={submit}
-      >
+
+      <SendButton type="button" on:click={submit}>
         {props.block.options?.labels?.button}
       </SendButton>
     </div>

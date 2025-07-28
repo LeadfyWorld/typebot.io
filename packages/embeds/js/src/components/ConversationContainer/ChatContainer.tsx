@@ -1,5 +1,4 @@
 import { useBotContainer } from "@/contexts/BotContainerContext";
-import { useBotWS } from "@/contexts/BotWSContext";
 import {
   ChatContainerSizeContext,
   createChatContainerProviderValue,
@@ -29,7 +28,7 @@ import type {
   StartChatResponse,
 } from "@typebot.io/chat-api/schemas";
 import { parseUnknownClientError } from "@typebot.io/lib/parseUnknownClientError";
-import { isNotDefined } from "@typebot.io/lib/utils";
+import { isEmpty, isNotDefined } from "@typebot.io/lib/utils";
 import type { LogInSession } from "@typebot.io/logs/schemas";
 import { latestTypebotVersion } from "@typebot.io/schemas/versions";
 import { defaultSystemMessages } from "@typebot.io/settings/constants";
@@ -66,34 +65,52 @@ type Props = {
 export const ChatContainer = (props: Props) => {
   let chatContainer: HTMLDivElement | undefined;
 
-  console.log("props", props);
-
-  const partySocket = useBotWS();
-
   const botContainer = useBotContainer();
 
-  console.log("initial", {
-    version: "2",
-    input: props.initialChatReply.input,
-    messages: props.initialChatReply.messages,
-    clientSideActions: props.initialChatReply.clientSideActions,
-    dynamicTheme: props.initialChatReply.dynamicTheme,
-  });
+  const [chatChunks, setChatChunks] = createSignal<ChatChunkType[]>(
+    isEmpty(props.initialChatReply.chunks)
+      ? [
+          {
+            version: "2",
+            input: props.initialChatReply.input,
+            messages: props.initialChatReply.messages,
+            clientSideActions: props.initialChatReply.clientSideActions,
+            dynamicTheme: props.initialChatReply.dynamicTheme,
+          },
+        ]
+      : [
+          {
+            version: "2",
+            input: props.initialChatReply.input,
+            messages: props.initialChatReply.messages,
+            clientSideActions: props.initialChatReply.clientSideActions,
+            dynamicTheme: props.initialChatReply.dynamicTheme,
+          },
+          ...props.initialChatReply.chunks,
+        ],
+  );
 
-  console.log("props.initialChatReply", props.initialChatReply);
+  // console.log({
+  //   version: "2",
+  //   input: props.initialChatReply.input,
+  //   messages: props.initialChatReply.messages,
+  //   clientSideActions: props.initialChatReply.clientSideActions,
+  //   dynamicTheme: props.initialChatReply.dynamicTheme,
+  // });
 
-  // const chatChunks = props.initialChatReply.chunks;
+  // console.log(
+  //   "props.initialChatReply.chunks",
+  //   {
+  //     version: "2",
+  //     input: props.initialChatReply.input,
+  //     messages: props.initialChatReply.messages,
+  //     clientSideActions: props.initialChatReply.clientSideActions,
+  //     dynamicTheme: props.initialChatReply.dynamicTheme,
+  //   },
+  //   props.initialChatReply.chunks[0],
+  //   props.initialChatReply.chunks[1],
+  // );
 
-  const [chatChunks, setChatChunks] = createSignal<ChatChunkType[]>([
-    // {
-    //   version: "2",
-    //   input: props.initialChatReply.input,
-    //   messages: props.initialChatReply.messages,
-    //   clientSideActions: props.initialChatReply.clientSideActions,
-    //   dynamicTheme: props.initialChatReply.dynamicTheme,
-    // },
-    ...props.initialChatReply.chunks,
-  ]);
   // {
   //   key: `typebot-${props.context.typebot.id}-chatChunks`,
   //   storage: props.context.storage,
@@ -379,7 +396,6 @@ export const ChatContainer = (props: Props) => {
           sessionId: props.initialChatReply.sessionId,
           resultId: props.initialChatReply.resultId,
         },
-        partySocket,
         onMessageStream: streamMessage,
         onStreamError: async (error) => {
           setChatChunks(setRetryStatusOnLastAnswer);

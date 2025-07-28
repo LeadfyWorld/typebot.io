@@ -335,8 +335,6 @@ export const Bubble = (props: BubbleProps) => {
                 onChatStatePersisted={handleOnChatStatePersisted}
                 leadInfo={leadInfo()}
                 setLead={(value) => {
-                  console.log("setLead", value);
-
                   setLeadInfo(value);
                 }}
               />

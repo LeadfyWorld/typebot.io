@@ -157,10 +157,7 @@ export const PhoneInput = (props: PhoneInputProps) => {
           autofocus={!guessDeviceIsMobile()}
         />
       </div>
-      <SendButton
-        type="button"
-        on:click={submit}
-      >
+      <SendButton type="button" on:click={submit}>
         {props.labels?.button}
       </SendButton>
     </div>

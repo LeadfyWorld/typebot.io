@@ -14,7 +14,6 @@ import { listenForWebhook } from "@/features/blocks/logic/webhook/listenForWebho
 import type { ClientSideActionContext } from "@/types";
 import type { ContinueChatResponse } from "@typebot.io/chat-api/schemas";
 import type { LogInSession } from "@typebot.io/logs/schemas";
-import type PartySocket from "partysocket";
 import { injectStartProps } from "./injectStartProps";
 
 type ClientSideActionResponse =
@@ -26,7 +25,6 @@ type ClientSideActionResponse =
 
 type Props = {
   clientSideAction: NonNullable<ContinueChatResponse["clientSideActions"]>[0];
-  partySocket: PartySocket;
   context: ClientSideActionContext;
   onMessageStream?: (props: { id: string; message: string }) => void;
   onStreamError?: (error: LogInSession) => void;
@@ -35,7 +33,6 @@ type Props = {
 export const executeClientSideAction = async ({
   clientSideAction,
   context,
-  partySocket,
   onMessageStream,
   onStreamError,
 }: Props): Promise<ClientSideActionResponse> => {
@@ -105,7 +102,6 @@ export const executeClientSideAction = async ({
       sessionId: context.sessionId,
       resultId: context.resultId,
       context,
-      partySocket,
     });
   }
 };

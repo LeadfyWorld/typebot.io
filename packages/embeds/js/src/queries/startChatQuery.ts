@@ -58,8 +58,6 @@ export async function startChatQuery({
 
   const typebotId = typeof typebot === "string" ? typebot : typebot.id;
 
-  console.log("isPreview", isPreview, sessionId);
-
   if (isPreview) {
     return startPreviewChat({
       apiHost,
@@ -104,6 +102,65 @@ export async function startChatQuery({
     return {
       error,
     };
+  }
+}
+
+export async function setChatLeadQuery({
+  typebot,
+  apiHost,
+  leadInfo,
+}: {
+  apiHost?: string;
+  typebot: string | any;
+  leadInfo: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+}) {
+  if (isNotDefined(typebot)) {
+    throw new Error("Typebot ID is required to get initial messages");
+  }
+
+  const typebotId = typeof typebot === "string" ? typebot : typebot.id;
+
+  try {
+    const data = await ky
+      .post(
+        `${
+          isNotEmpty(apiHost) ? apiHost : guessApiHost()
+        }/api/v1/sessions/${typebotId}/setLead`,
+        {
+          json: {
+            conversationId: window.gaGlobal?.vid,
+            leadInfo,
+          },
+          timeout: false,
+        },
+      )
+      .json<{
+        id: number;
+        data: {
+          name: string;
+          email: string;
+          phone: string;
+        };
+        conversation_id: string;
+      }>();
+
+    return {
+      data: {
+        id: data.id,
+        leadInfo: {
+          name: data.data.name,
+          email: data.data.email,
+          phone: data.data.phone,
+        },
+        conversationId: data.conversation_id,
+      },
+    };
+  } catch (error) {
+    return { error };
   }
 }
 
