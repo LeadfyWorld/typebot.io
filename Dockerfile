@@ -1,10 +1,14 @@
 # ================= INSTALL BUN ===================
 ARG BUN_VERSION=1.2.8
+
 FROM debian:bullseye-slim AS build-bun
+
 ARG BUN_VERSION
+
 RUN apt-get update -qq \
     && apt-get install -qq --no-install-recommends \
     ca-certificates \
+    wget \
     curl \
     dirmngr \
     gpg \
