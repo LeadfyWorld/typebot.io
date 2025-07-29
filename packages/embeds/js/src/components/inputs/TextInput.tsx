@@ -2,10 +2,8 @@ import { ShortTextInput } from "@/components/inputs/ShortTextInput";
 import { Textarea } from "@/components/inputs/Textarea";
 import type { CommandData } from "@/features/commands/types";
 import type { Attachment, BotContext, InputSubmitContent } from "@/types";
-import { guessApiHost } from "@/utils/guessApiHost";
 import type { TextInputBlock } from "@typebot.io/blocks-inputs/text/schema";
 import { guessDeviceIsMobile } from "@typebot.io/lib/guessDeviceIsMobile";
-import { isDefined } from "@typebot.io/lib/utils";
 import { cx } from "@typebot.io/ui/lib/cva";
 import { Show, createSignal, onCleanup, onMount } from "solid-js";
 
@@ -15,6 +13,7 @@ type Props = {
   context: BotContext;
   name: string;
   error?: boolean;
+  isLong?: boolean;
   onSubmit?: (value: InputSubmitContent) => void;
 };
 
@@ -54,40 +53,46 @@ export const TextInput = (props: Props) => {
       let attachments: Attachment[] | undefined;
       if (selectedFiles().length > 0) {
         setUploadProgress(undefined);
-        const urls = await uploadFiles({
-          apiHost:
-            props.context.apiHost ?? guessApiHost({ ignoreChatApiUrl: true }),
-          files: selectedFiles().map((file) => ({
-            file: file,
-            input: {
-              blockId: props.block.id,
-              sessionId: props.context.sessionId,
-              fileName: file.name,
-            },
-          })),
-          onUploadProgress: setUploadProgress,
-        });
-        attachments = urls
-          ?.map((urls, index) =>
-            urls
-              ? {
-                  ...urls,
-                  blobUrl: URL.createObjectURL(selectedFiles()[index]),
-                }
-              : null,
-          )
-          .filter(isDefined);
+        // TODO: REMOVE COMMENT WHEN ADD FILE AGAIN
+        // const urls = await uploadFiles({
+        //   apiHost:
+        //     props.context.apiHost ?? guessApiHost({ ignoreChatApiUrl: true }),
+        //   files: selectedFiles().map((file) => ({
+        //     file: file,
+        //     input: {
+        //       blockId: props.block.id,
+        //       sessionId: props.context.sessionId,
+        //       fileName: file.name,
+        //     },
+        //   })),
+        //   onUploadProgress: setUploadProgress,
+        // });
+
+        // attachments = urls
+        //   ?.map((urls, index) =>
+        //     urls
+        //       ? {
+        //           ...urls,
+        //           blobUrl: URL.createObjectURL(selectedFiles()[index]),
+        //         }
+        //       : null,
+        //   )
+        //   .filter(isDefined);
       }
-      props.onSubmit({
-        type: "text",
-        value: inputRef?.value ?? inputValue(),
-        attachments,
-      });
+
+      if (props.onSubmit) {
+        props.onSubmit({
+          type: "text",
+          value: inputRef?.value ?? inputValue(),
+          attachments,
+        });
+      }
     } else inputRef?.focus();
   };
 
   const submitIfCtrlEnter = (e: KeyboardEvent) => {
-    if (!props.block.options?.isLong) return;
+    if (props.block && !props.block.options?.isLong) return;
+
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
   };
 

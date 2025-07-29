@@ -77,7 +77,7 @@ export type BotProps = {
   progressBarRef?: HTMLDivElement;
   startFrom?: StartFrom;
   sessionId?: string;
-  setLead: (
+  setLead?: (
     lead: { name: string; email: string; phone: string } | null,
   ) => void;
   onNewInputBlock?: (inputBlock: InputBlock) => void;
@@ -196,7 +196,9 @@ export const Bot = (props: BotProps & { class?: string }) => {
         ) {
           setInitialChatReply(initialChatInStorage);
 
-          props.setLead(data.conversationLead);
+          if (props.setLead) {
+            props.setLead(data.conversationLead);
+          }
         } else {
           // Restart chat by resetting remembered state
           wipeExistingChatStateInStorage(data.typebot.id);
@@ -206,7 +208,9 @@ export const Bot = (props: BotProps & { class?: string }) => {
             storage,
           });
 
-          props.setLead(data.conversationLead);
+          if (props.setLead) {
+            props.setLead(data.conversationLead);
+          }
         }
       } else {
         setInitialChatReply(data);
@@ -215,13 +219,17 @@ export const Bot = (props: BotProps & { class?: string }) => {
           storage,
         });
 
-        props.setLead(data.conversationLead);
+        if (props.setLead) {
+          props.setLead(data.conversationLead);
+        }
       }
       props.onChatStatePersisted?.(true);
     } else {
       wipeExistingChatStateInStorage(data.typebot.id);
       setInitialChatReply(data);
-      props.setLead(data.conversationLead);
+      if (props.setLead) {
+        props.setLead(data.conversationLead);
+      }
       if (data.input?.id && props.onNewInputBlock)
         props.onNewInputBlock(data.input);
       if (data.logs) props.onNewLogs?.(data.logs);
@@ -535,7 +543,7 @@ const BotContent = (props: BotContentProps) => {
 };
 
 type BotFormContentProps = {
-  setLead: (
+  setLead?: (
     values: { name: string; email: string; phone: string } | null,
   ) => void;
   initialChatReply: StartChatResponse;
@@ -651,7 +659,9 @@ const BotFormContent = (props: BotFormContentProps) => {
       },
     });
 
-    props.setLead(result.data?.leadInfo || null);
+    if (props.setLead) {
+      props.setLead(result.data?.leadInfo || null);
+    }
   };
 
   return (

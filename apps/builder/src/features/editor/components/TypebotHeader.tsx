@@ -32,7 +32,7 @@ import { isDefined, isNotDefined } from "@typebot.io/lib/utils";
 import { Plan } from "@typebot.io/prisma/enum";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { headerHeight } from "../constants";
 import { useEditor } from "../providers/EditorProvider";
@@ -65,7 +65,13 @@ export const TypebotHeader = () => {
       flexShrink={0}
     >
       {isOpen && <SupportBubble autoShowDelay={0} />}
-      <LeftElements pos="absolute" left="1rem" onHelpClick={handleHelpClick} />
+
+      <LeftElements
+        pos="absolute"
+        left="1rem"
+        onHelpClick={handleHelpClick}
+      />
+
       <TypebotNav
         display={{ base: "none", xl: "flex" }}
         pos={{ base: "absolute" }}
@@ -137,8 +143,16 @@ const LeftElements = ({
   });
 
   return (
-    <HStack justify="center" align="center" spacing="6" {...props}>
-      <HStack alignItems="center" spacing={3}>
+    <HStack
+      justify="center"
+      align="center"
+      spacing="6"
+      {...props}
+    >
+      <HStack
+        alignItems="center"
+        spacing={3}
+      >
         <IconButton
           as={Link}
           aria-label="Navigate back"
@@ -234,10 +248,18 @@ const LeftElements = ({
           </chakra.span>
         </Button>
       </HStack>
+
       {isSavingLoading && (
         <HStack>
-          <Spinner speed="0.7s" size="sm" color="gray.400" />
-          <Text fontSize="sm" color="gray.400">
+          <Spinner
+            speed="0.7s"
+            size="sm"
+            color="gray.400"
+          />
+          <Text
+            fontSize="sm"
+            color="gray.400"
+          >
             {t("editor.header.savingSpinner.label")}
           </Text>
         </HStack>

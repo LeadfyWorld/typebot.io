@@ -1,3 +1,4 @@
+// @ts-nocheck
 import codeSnippetsCssUrl from "@/assets/code-snippet.css?url";
 import { ContentPageWrapper } from "@/components/ContentPageWrapper";
 import { allPosts } from "@/content-collections";

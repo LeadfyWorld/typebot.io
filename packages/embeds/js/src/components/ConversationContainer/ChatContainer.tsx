@@ -167,7 +167,7 @@ export const ChatContainer = (props: Props) => {
   });
 
   const getScrollContainer = () => {
-    botContainer()?.querySelector(".scrollable-container");
+    return botContainer()?.querySelector(".scrollable-container");
   };
 
   const cleanupRecoveredChatChunks = () => {
@@ -310,6 +310,7 @@ export const ChatContainer = (props: Props) => {
     offset = 0,
   }: { lastElement?: HTMLDivElement; offset?: number } = {}) => {
     const scrollContainer = getScrollContainer();
+
     if (!scrollContainer) return;
 
     const isBottomOfLastElementTooFarBelow =

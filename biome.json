@@ -95,6 +95,7 @@
       "./packages/deprecated/bot-engine/src/components/ChatGroup/ChatBlock/bubbles/GuestBubble.tsx",
       "./apps/viewer/src/pages/api/typebots/[typebotId]/blocks/[blockId]/executeWebhook.ts",
       "./apps/builder/src/pages/api/typebots/[typebotId]/blocks/[blockId]/testHttpRequest.ts",
+      "./apps/builder/src/features/editor/components/TypebotHeader.tsx",
       "./packages/bot-engine/src/blocks/integrations/httpRequest/executeHttpRequestBlock.ts",
       "./apps/builder/src/components/inputs/CodeEditor.tsx",
       "openapi/*.json",

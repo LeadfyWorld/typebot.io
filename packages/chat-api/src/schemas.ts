@@ -252,6 +252,7 @@ export const startChatInputSchema = z.object({
       },
     }),
   textBubbleContentFormat: z.enum(["richText", "markdown"]).default("richText"),
+  conversationId: z.string().describe("ID from lead / vid"),
 });
 export type StartChatInput = z.infer<typeof startChatInputSchema>;
 

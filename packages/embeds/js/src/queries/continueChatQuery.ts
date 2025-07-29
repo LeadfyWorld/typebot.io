@@ -6,6 +6,15 @@ import type {
 import { isNotEmpty } from "@typebot.io/lib/utils";
 import ky from "ky";
 
+declare global {
+  interface Window {
+    gaGlobal?: {
+      vid?: string;
+      [key: string]: any;
+    };
+  }
+}
+
 export const continueChatQuery = async ({
   apiHost,
   message,

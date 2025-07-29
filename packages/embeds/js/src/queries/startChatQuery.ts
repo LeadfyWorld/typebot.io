@@ -70,6 +70,10 @@ export async function startChatQuery({
   }
 
   try {
+    if (!window.gaGlobal?.vid) {
+      throw new Error("Missing vid");
+    }
+
     const iframeReferrerOrigin =
       parent !== window && isNotEmpty(document.referrer)
         ? new URL(document.referrer).origin
@@ -86,7 +90,7 @@ export async function startChatQuery({
           prefilledVariables,
           resultId,
           isOnlyRegistering: false,
-          conversationId: window.gaGlobal?.vid,
+          conversationId: window.gaGlobal.vid,
         } satisfies Omit<
           StartChatInput,
           "publicId" | "textBubbleContentFormat"
@@ -231,7 +235,6 @@ const startPreviewChat = async ({
             typebot,
             prefilledVariables,
             sessionId,
-            conversationId: window.gaGlobal?.vid,
           } satisfies Omit<
             StartPreviewChatInput,
             "typebotId" | "isOnlyRegistering" | "textBubbleContentFormat"
