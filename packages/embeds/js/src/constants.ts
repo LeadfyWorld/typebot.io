@@ -21,6 +21,8 @@ export const defaultBotProps: BotProps = {
   wsHost: undefined,
   resultId: undefined,
   sessionId: undefined,
+  leadInfo: null,
+  setLead: undefined,
 };
 
 export const defaultPopupProps: PopupProps = {

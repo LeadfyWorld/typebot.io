@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Card } from "@/components/Card";
 import { ContentPageWrapper } from "@/components/ContentPageWrapper";
 import { allPosts } from "@/content-collections";

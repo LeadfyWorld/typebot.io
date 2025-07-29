@@ -103,10 +103,15 @@ export const executeHttpRequestBlock = async (
     response: httpRequestResponse,
     logs: httpRequestLogs,
     startTimeShouldBeUpdated,
-  } = await executeHttpRequest(parsedHttpRequest, {
-    ...params,
-    timeout: block.options?.timeout,
-  }, sessionStore, state);
+  } = await executeHttpRequest(
+    parsedHttpRequest,
+    {
+      ...params,
+      timeout: block.options?.timeout,
+    },
+    sessionStore,
+    state,
+  );
 
   return {
     ...saveDataInResponseVariableMapping({
@@ -203,7 +208,7 @@ export const parseWebhookAttributes = async ({
 
 export const executeHttpRequest = async (
   webhook: ParsedWebhook,
-  params: Params = {},
+  params: Params,
   sessionStore: SessionStore,
   state?: SessionState,
 ): Promise<{
@@ -215,9 +220,6 @@ export const executeHttpRequest = async (
 
   const { headers, url, method, basicAuth, isJson } = webhook;
   const contentType = headers ? headers["Content-Type"] : undefined;
-
-  console.log('state',state);
-  console.log('sessionStore',sessionStore);
 
   if (headers) {
     headers["Session-ID"] = sessionStore.getSessionId();
@@ -319,7 +321,9 @@ export const executeHttpRequest = async (
       statusCode: 500,
       data: { message: `Error from Typebot server: ${error}` },
     };
+
     console.error(error);
+
     logs.push({
       status: "error",
       description: `Webhook failed to execute.`,

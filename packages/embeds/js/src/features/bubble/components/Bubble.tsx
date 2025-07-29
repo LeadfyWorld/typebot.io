@@ -43,6 +43,25 @@ export type BubbleProps = BotProps &
     onPreviewMessageDismissed?: () => void;
   };
 
+const getLocalStorageValue = (key: string) => {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? value : null;
+  } catch {
+    return null;
+  }
+};
+
+const setLocalStorageValue = (key: string, value: string | null) => {
+  try {
+    if (value === null) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, value);
+    }
+  } catch {}
+};
+
 export const Bubble = (props: BubbleProps) => {
   const [bubbleProps, botProps] = splitProps(props, [
     "isOpen",
@@ -58,16 +77,19 @@ export const Bubble = (props: BubbleProps) => {
 
   const [bubbleLifecycle, setBubbleLifecycle] =
     createSignal<BubbleLifecycle>("idle");
+
   const [hasOpenedOnce, setHasOpenedOnce] = createSignal(false);
+
+  const [leadInfo, setLeadInfo] = createSignal<{
+    name: string;
+    email: string;
+    phone: string;
+  } | null>(null);
 
   const isControlled = createMemo(() => isDefined(bubbleProps.isOpen));
 
   const isOpen = createMemo(() =>
     isControlled() ? bubbleProps.isOpen! : bubbleLifecycle() === "open",
-  );
-
-  const [prefilledVariables, setPrefilledVariables] = createSignal(
-    botProps.prefilledVariables,
   );
 
   const [previewMessage, setPreviewMessage] = createSignal<
@@ -123,9 +145,6 @@ export const Bubble = (props: BubbleProps) => {
         break;
       case "hidePreviewMessage":
         hidePreviewMessage();
-        break;
-      case "setPrefilledVariables":
-        setPrefilledVariables((prev) => ({ ...prev, ...data.variables }));
         break;
       case "unmount":
         unmountBubble();
@@ -238,8 +257,10 @@ export const Bubble = (props: BubbleProps) => {
           {typebotColors}
           {styles}
         </style>
+
         {/* Needed for progress bar with fixed position we need to be outside of fixed bubble container */}
         <div ref={progressBarContainerRef} />
+
         <div
           class={cx(
             bubbleProps.theme?.position === "static"
@@ -258,7 +279,7 @@ export const Bubble = (props: BubbleProps) => {
             "--bot-max-width":
               bubbleProps.theme?.chatWindow?.maxWidth ?? "400px",
             "--bot-max-height":
-              bubbleProps.theme?.chatWindow?.maxHeight ?? "704px",
+              bubbleProps.theme?.chatWindow?.maxHeight ?? "680px",
             "--container-border-radius": "7px",
             ...bubbleProps.inlineStyle,
           }}
@@ -272,6 +293,7 @@ export const Bubble = (props: BubbleProps) => {
               onCloseClick={hidePreviewMessage}
             />
           </Show>
+
           <Show when={!bubbleProps.theme?.button?.isHidden}>
             <BubbleButton
               {...bubbleProps.theme?.button}
@@ -280,6 +302,7 @@ export const Bubble = (props: BubbleProps) => {
               isBotOpen={isOpen()}
             />
           </Show>
+
           <div
             part="bot"
             style={{
@@ -290,9 +313,12 @@ export const Bubble = (props: BubbleProps) => {
                   ? "bottom left"
                   : "bottom right",
               transform: isOpen() ? "scale3d(1, 1, 1)" : "scale3d(0, 0, 1)",
+              "border-radius": "20px",
+              display: "flex",
+              "flex-direction": "column",
             }}
             class={cx(
-              "absolute rounded-lg max-h-[calc(100dvh-var(--container-bottom)-var(--button-gap)-var(--button-size))] shadow-lg bg-[var(--bot-bg-color)] h-[var(--bot-max-height)] max-w-[var(--bot-max-width)] overflow-hidden",
+              "absolute rounded-lg max-h-[calc(100dvh-20px-var(--container-bottom)-var(--button-gap)-var(--button-size))] shadow-lg bg-[var(--bot-bg-color)] h-[var(--bot-max-height)] max-w-[var(--bot-max-width)] overflow-hidden",
               isOpen() ? "opacity-1" : "opacity-0 pointer-events-none",
               bubbleProps.theme?.placement === "left"
                 ? "sm:left-0 -left-5"
@@ -307,7 +333,10 @@ export const Bubble = (props: BubbleProps) => {
                 {...botProps}
                 onScriptExecutionSuccess={handleScriptExecutionSuccess}
                 onChatStatePersisted={handleOnChatStatePersisted}
-                prefilledVariables={prefilledVariables()}
+                leadInfo={leadInfo()}
+                setLead={(value) => {
+                  setLeadInfo(value);
+                }}
               />
             </Show>
           </div>

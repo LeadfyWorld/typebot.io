@@ -21,8 +21,7 @@ import { timeInputSchema } from "@typebot.io/blocks-inputs/time/schema";
 import { urlInputSchema } from "@typebot.io/blocks-inputs/url/schema";
 import { logInSessionSchema } from "@typebot.io/logs/schemas";
 import { settingsSchema } from "@typebot.io/settings/schemas";
-import { themeSchema } from "@typebot.io/theme/schemas";
-import { dynamicThemeSchema } from "@typebot.io/theme/schemas";
+import { dynamicThemeSchema, themeSchema } from "@typebot.io/theme/schemas";
 import { preprocessTypebot } from "@typebot.io/typebot/preprocessTypebot";
 import {
   typebotV5Schema,
@@ -253,6 +252,7 @@ export const startChatInputSchema = z.object({
       },
     }),
   textBubbleContentFormat: z.enum(["richText", "markdown"]).default("richText"),
+  conversationId: z.string().describe("ID from lead / vid"),
 });
 export type StartChatInput = z.infer<typeof startChatInputSchema>;
 
@@ -339,6 +339,12 @@ const chatResponseBaseSchema = z.object({
       "The sent message is validated and formatted on the backend. For example, if for a date input you replied something like `tomorrow`, the backend will convert it to a date string. This field returns the formatted message.",
     ),
   messages: z.array(chatBubbleSchema),
+  chunks: z
+    .any()
+    .optional()
+    .describe(
+      "If the chat is streamed, this field will contain the streamed chunks of the last message.",
+    ),
   input: z
     .union([
       z.discriminatedUnion("type", [
@@ -396,6 +402,14 @@ export const startChatResponseSchema = z
       .string()
       .describe("To save and use for /continueChat requests."),
     resultId: z.string().optional(),
+    virtualAssistantId: z.string().nullable(),
+    conversationLead: z
+      .object({
+        name: z.string(),
+        email: z.string(),
+        phone: z.string(),
+      })
+      .nullable(),
     typebot: z.object({
       id: z.string(),
       version: z.union([

@@ -63,8 +63,12 @@ export const InputChatBlock = (props: Props) => {
   return (
     <Switch>
       <Match when={props.input.answer && props.input.answer.status !== "retry"}>
-        <GuestBubble answer={props.input.answer} theme={props.theme} />
+        <GuestBubble
+          answer={props.input.answer}
+          theme={props.theme}
+        />
       </Match>
+
       <Match
         when={
           isNotDefined(props.input.answer) ||
@@ -75,29 +79,53 @@ export const InputChatBlock = (props: Props) => {
           class="flex justify-end animate-fade-in gap-1 @xs:gap-2 typebot-input-container"
           data-blockid={props.input.id}
           ref={props.ref}
+          style={{
+            "border-top": "1px solid #ebebeb",
+            position: "absolute",
+            bottom: "40px",
+            width: "calc(100% - 30px)",
+            "justify-self": "anchor-center",
+            background:
+              props.context.typebot.theme.general?.background?.content,
+            padding: "5px 0px",
+            "border-bottom-left-radius": "10px",
+            "border-bottom-right-radius": "10px",
+          }}
         >
-          <Show
-            when={
-              props.theme.chat?.hostAvatar?.isEnabled ??
-              defaultHostAvatarIsEnabled
-            }
+          <div
+            class="flex justify-end gap-2 typebot-input-container"
+            style={{
+              padding: "10px",
+              background:
+                props.context.typebot.theme.chat?.inputs?.backgroundColor,
+              "border-radius": "7px",
+              flex: 1,
+            }}
           >
-            <div class="flex flex-shrink-0 items-center w-6 h-6 @xs:w-10 @xs:h-10" />
-          </Show>
-          <Input
-            context={props.context}
-            block={props.input}
-            chunkIndex={props.chunkIndex}
-            isInputPrefillEnabled={props.isInputPrefillEnabled}
-            existingAnswer={
-              props.input.answer?.status === "retry"
-                ? getAnswerValue(props.input.answer)
-                : undefined
-            }
-            onTransitionEnd={props.onTransitionEnd}
-            onSubmit={handleSubmit}
-            onSkip={handleSkip}
-          />
+            <Show
+              when={
+                props.theme.chat?.hostAvatar?.isEnabled ??
+                defaultHostAvatarIsEnabled
+              }
+            >
+              <div class="flex flex-shrink-0 items-center w-6 h-6 @xs:w-10 @xs:h-10" />
+            </Show>
+
+            <Input
+              context={props.context}
+              block={props.input}
+              chunkIndex={props.chunkIndex}
+              isInputPrefillEnabled={props.isInputPrefillEnabled}
+              existingAnswer={
+                props.input.answer?.status === "retry"
+                  ? getAnswerValue(props.input.answer)
+                  : undefined
+              }
+              onTransitionEnd={props.onTransitionEnd}
+              onSubmit={handleSubmit}
+              onSkip={handleSkip}
+            />
+          </div>
         </div>
       </Match>
     </Switch>
@@ -137,10 +165,12 @@ const Input = (props: {
         <TextInput
           block={props.block as TextInputBlock}
           defaultValue={getPrefilledValue()}
+          placeholder="Digite sua mensagem..."
           context={props.context}
           onSubmit={props.onSubmit}
         />
       </Match>
+
       <Match when={props.block.type === InputBlockType.NUMBER}>
         <NumberInput
           block={props.block as NumberInputBlock}
@@ -148,6 +178,7 @@ const Input = (props: {
           onSubmit={props.onSubmit}
         />
       </Match>
+
       <Match when={props.block.type === InputBlockType.EMAIL}>
         <EmailInput
           block={props.block as EmailInputBlock}
@@ -155,6 +186,7 @@ const Input = (props: {
           onSubmit={props.onSubmit}
         />
       </Match>
+
       <Match when={props.block.type === InputBlockType.URL}>
         <UrlInput
           block={props.block as UrlInputBlock}
@@ -162,6 +194,7 @@ const Input = (props: {
           onSubmit={props.onSubmit}
         />
       </Match>
+
       <Match when={props.block.type === InputBlockType.PHONE}>
         <PhoneInput
           labels={(props.block as PhoneNumberInputBlock).options?.labels}
@@ -172,6 +205,7 @@ const Input = (props: {
           onSubmit={props.onSubmit}
         />
       </Match>
+
       <Match when={props.block.type === InputBlockType.DATE}>
         <DateForm
           options={props.block.options as DateInputBlock["options"]}
@@ -179,6 +213,7 @@ const Input = (props: {
           onSubmit={props.onSubmit}
         />
       </Match>
+
       <Match when={props.block.type === InputBlockType.TIME}>
         <TimeForm
           block={props.block as TimeInputBlock["options"]}
@@ -186,7 +221,11 @@ const Input = (props: {
           onSubmit={props.onSubmit}
         />
       </Match>
-      <Match when={isButtonsBlock(props.block)} keyed>
+
+      <Match
+        when={isButtonsBlock(props.block)}
+        keyed
+      >
         {(block) => (
           <Switch>
             <Match when={!block.options?.isMultipleChoice}>
@@ -207,7 +246,11 @@ const Input = (props: {
           </Switch>
         )}
       </Match>
-      <Match when={isPictureChoiceBlock(props.block)} keyed>
+
+      <Match
+        when={isPictureChoiceBlock(props.block)}
+        keyed
+      >
         {(block) => (
           <Switch>
             <Match when={!block.options?.isMultipleChoice}>
@@ -229,6 +272,7 @@ const Input = (props: {
           </Switch>
         )}
       </Match>
+
       <Match when={props.block.type === InputBlockType.RATING}>
         <RatingForm
           block={props.block as RatingInputBlock}
@@ -236,6 +280,7 @@ const Input = (props: {
           onSubmit={props.onSubmit}
         />
       </Match>
+
       <Match when={props.block.type === InputBlockType.FILE}>
         <FileUploadForm
           context={props.context}
@@ -244,6 +289,7 @@ const Input = (props: {
           onSkip={props.onSkip}
         />
       </Match>
+
       <Match when={props.block.type === InputBlockType.PAYMENT}>
         <PaymentForm
           context={props.context}
@@ -257,6 +303,7 @@ const Input = (props: {
           onTransitionEnd={props.onTransitionEnd}
         />
       </Match>
+
       <Match when={props.block.type === InputBlockType.CARDS}>
         <CardsCaroussel
           block={props.block as CardsBlock}

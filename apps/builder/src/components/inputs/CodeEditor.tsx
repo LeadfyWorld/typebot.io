@@ -21,7 +21,7 @@ import { githubLight } from "@uiw/codemirror-theme-github";
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night";
 import CodeMirror, { type ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import type { ReactNode } from "react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { CopyButton } from "../CopyButton";
 import { MoreInfoTooltip } from "../MoreInfoTooltip";
@@ -115,7 +115,13 @@ export const CodeEditor = ({
       flex="1"
     >
       {label && (
-        <FormLabel display="flex" flexShrink={0} gap="1" mb="0" mr="0">
+        <FormLabel
+          display="flex"
+          flexShrink={0}
+          gap="1"
+          mb="0"
+          mr="0"
+        >
           {label}{" "}
           {moreInfoTooltip && (
             <MoreInfoTooltip>{moreInfoTooltip}</MoreInfoTooltip>

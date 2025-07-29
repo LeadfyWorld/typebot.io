@@ -83,6 +83,15 @@ ARG SCOPE
 COPY . .
 RUN bunx turbo@2.4.5-canary.7 prune "${SCOPE}" --docker
 
+# ================= DEV ===================
+
+FROM base AS development
+ARG SCOPE
+WORKDIR /app
+COPY . .
+RUN bun install
+CMD ["bun", "run", "dev"]
+
 # =============== INSTALL & BUILD =================
 
 FROM base AS builder
@@ -103,8 +112,7 @@ COPY --from=builder --chown=node:node /app/apps/${SCOPE}/.next/standalone ./
 COPY --from=builder --chown=node:node /app/apps/${SCOPE}/.next/static ./apps/${SCOPE}/.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/apps/${SCOPE}/public ./apps/${SCOPE}/public
 
-RUN ./node_modules/.bin/prisma generate --schema=packages/prisma/postgresql/schema.prisma;
-
+# RUN ./node_modules/.bin/prisma generate --schema=packages/prisma/postgresql/schema.prisma;
 
 COPY scripts/${SCOPE}-entrypoint.sh ./
 RUN chmod +x ./${SCOPE}-entrypoint.sh

@@ -33,6 +33,7 @@ type Props = {
   block: TextInputBlock;
   defaultValue?: string;
   context: BotContext;
+  placeholder?: string;
   onSubmit: (value: InputSubmitContent) => void;
 };
 
@@ -60,8 +61,10 @@ export const TextInput = (props: Props) => {
       mediaRecorder.stop();
       return;
     }
+
     if (checkIfInputIsValid()) {
       let attachments: Attachment[] | undefined;
+
       if (selectedFiles().length > 0) {
         setUploadProgress(undefined);
         const urls = await uploadFiles({
@@ -88,6 +91,7 @@ export const TextInput = (props: Props) => {
           )
           .filter(isDefined);
       }
+
       props.onSubmit({
         type: "text",
         value: inputRef?.value ?? inputValue(),
@@ -102,8 +106,13 @@ export const TextInput = (props: Props) => {
   };
 
   const submitIfCtrlEnter = (e: KeyboardEvent) => {
-    if (!props.block.options?.isLong) return;
-    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
+    if (!props.block.options?.isLong) {
+      return;
+    }
+
+    if (e.key === "Enter" && !e.metaKey && !e.shiftKey && !e.ctrlKey) {
+      submit();
+    }
   };
 
   onMount(() => {
@@ -111,6 +120,7 @@ export const TextInput = (props: Props) => {
       inputRef.focus({
         preventScroll: true,
       });
+
     window.addEventListener("message", processIncomingEvent);
   });
 
@@ -233,13 +243,16 @@ export const TextInput = (props: Props) => {
       )
         .filter(isDefined)
         .map((url) => url.url);
+
       props.onSubmit({
         type: "recording",
         url: urls[0],
         blobUrl: URL.createObjectURL(audioFile),
       });
     };
+
     mediaRecorder.start();
+
     setRecordingStatus("started");
   };
 
@@ -276,6 +289,7 @@ export const TextInput = (props: Props) => {
           onRecordingConfirmed={handleRecordingConfirmed}
           onAbortRecording={handleRecordingAbort}
         />
+
         <Show when={recordingStatus() !== "started"}>
           <Show when={selectedFiles().length}>
             <div
@@ -301,6 +315,7 @@ export const TextInput = (props: Props) => {
               </For>
             </div>
           </Show>
+
           <div
             class={cx(
               "flex justify-between px-2",
@@ -316,7 +331,8 @@ export const TextInput = (props: Props) => {
                 inputmode={props.block.options?.inputMode}
                 placeholder={
                   props.block.options?.labels?.placeholder ??
-                  defaultTextInputOptions.labels.placeholder
+                  (defaultTextInputOptions.labels.placeholder ||
+                    props.placeholder)
                 }
               />
             ) : (
@@ -327,7 +343,8 @@ export const TextInput = (props: Props) => {
                 inputmode={props.block.options?.inputMode}
                 placeholder={
                   props.block.options?.labels?.placeholder ??
-                  defaultTextInputOptions.labels.placeholder
+                  (defaultTextInputOptions.labels.placeholder ||
+                    props.placeholder)
                 }
               />
             )}
@@ -346,6 +363,7 @@ export const TextInput = (props: Props) => {
           </div>
         </Show>
       </div>
+
       <Switch>
         <Match
           when={
@@ -355,7 +373,7 @@ export const TextInput = (props: Props) => {
           }
         >
           <Button
-            class="h-[56px] flex items-center"
+            class="flex items-center"
             on:click={recordVoice}
             aria-label="Record voice"
           >
@@ -367,7 +385,6 @@ export const TextInput = (props: Props) => {
             type="button"
             on:click={submit}
             isDisabled={Boolean(uploadProgress())}
-            class="h-[56px]"
           >
             {props.block.options?.labels?.button}
           </SendButton>

@@ -1,5 +1,6 @@
 import { guessDeviceIsMobile } from "@typebot.io/lib/guessDeviceIsMobile";
 import { type JSX, splitProps } from "solid-js";
+import TextareaAutosize from "solid-textarea-autosize";
 
 type TextareaProps = {
   ref: HTMLTextAreaElement | undefined;
@@ -13,16 +14,30 @@ export const Textarea = (props: TextareaProps) => {
   const isMobile = guessDeviceIsMobile();
 
   return (
-    <textarea
+    <TextareaAutosize
       ref={local.ref}
       class="focus:outline-none bg-transparent px-4 py-4 flex-1 w-full text-input"
-      rows={6}
+      minRows={1}
+      maxRows={5}
       data-testid="textarea"
       required
       autofocus={!isMobile}
-      inputmode={local.inputmode}
       onInput={(e) => local.onInput(e.currentTarget.value)}
       {...others}
     />
   );
+
+  // return (
+  //   <textarea
+  //     ref={local.ref}
+  //     class="focus:outline-none bg-transparent px-4 py-4 flex-1 w-full text-input"
+  //     rows={6}
+  //     data-testid="textarea"
+  //     required
+  //     autofocus={!isMobile}
+  //     inputmode={local.inputmode}
+  //     onInput={(e) => local.onInput(e.currentTarget.value)}
+  //     {...others}
+  //   />
+  // );
 };

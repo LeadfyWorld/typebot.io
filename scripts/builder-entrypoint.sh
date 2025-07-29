@@ -1,7 +1,9 @@
 #!/bin/bash
 
 cd apps/builder;
+
 node  -e "const { configureRuntimeEnv } = require('next-runtime-env/build/configure'); configureRuntimeEnv();"
+
 cd ../..;
 
 ./node_modules/.bin/prisma migrate deploy --schema=packages/prisma/postgresql/schema.prisma;

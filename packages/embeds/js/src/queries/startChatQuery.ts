@@ -40,12 +40,14 @@ export async function startChatQuery({
 
   const paymentInProgressStateStr =
     getPaymentInProgressInStorage() ?? undefined;
+
   const paymentInProgressState = paymentInProgressStateStr
     ? (JSON.parse(paymentInProgressStateStr) as {
         sessionId: string;
         typebot: BotContext["typebot"];
       })
     : undefined;
+
   if (paymentInProgressState) {
     return resumeChatAfterPaymentRedirect({
       apiHost,
@@ -53,7 +55,9 @@ export async function startChatQuery({
       paymentInProgressState,
     });
   }
+
   const typebotId = typeof typebot === "string" ? typebot : typebot.id;
+
   if (isPreview) {
     return startPreviewChat({
       apiHost,
@@ -66,10 +70,15 @@ export async function startChatQuery({
   }
 
   try {
+    if (!window.gaGlobal?.vid) {
+      throw new Error("Missing vid");
+    }
+
     const iframeReferrerOrigin =
       parent !== window && isNotEmpty(document.referrer)
         ? new URL(document.referrer).origin
         : undefined;
+
     const response = await ky.post(
       `${getApiHost(apiHost)}/api/v1/typebots/${typebotId}/startChat`,
       {
@@ -81,6 +90,7 @@ export async function startChatQuery({
           prefilledVariables,
           resultId,
           isOnlyRegistering: false,
+          conversationId: window.gaGlobal.vid,
         } satisfies Omit<
           StartChatInput,
           "publicId" | "textBubbleContentFormat"
@@ -89,7 +99,70 @@ export async function startChatQuery({
       },
     );
 
-    return { data: await response.json<StartChatResponse>() };
+    return {
+      data: await response.json<StartChatResponse>(),
+    };
+  } catch (error) {
+    return {
+      error,
+    };
+  }
+}
+
+export async function setChatLeadQuery({
+  typebot,
+  apiHost,
+  leadInfo,
+}: {
+  apiHost?: string;
+  typebot: string | any;
+  leadInfo: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+}) {
+  if (isNotDefined(typebot)) {
+    throw new Error("Typebot ID is required to get initial messages");
+  }
+
+  const typebotId = typeof typebot === "string" ? typebot : typebot.id;
+
+  try {
+    const data = await ky
+      .post(
+        `${
+          isNotEmpty(apiHost) ? apiHost : guessApiHost()
+        }/api/v1/sessions/${typebotId}/setLead`,
+        {
+          json: {
+            conversationId: window.gaGlobal?.vid,
+            leadInfo,
+          },
+          timeout: false,
+        },
+      )
+      .json<{
+        id: number;
+        data: {
+          name: string;
+          email: string;
+          phone: string;
+        };
+        conversation_id: string;
+      }>();
+
+    return {
+      data: {
+        id: data.id,
+        leadInfo: {
+          name: data.data.name,
+          email: data.data.email,
+          phone: data.data.phone,
+        },
+        conversationId: data.conversation_id,
+      },
+    };
   } catch (error) {
     return { error };
   }
@@ -118,6 +191,7 @@ const resumeChatAfterPaymentRedirect = async ({
         {
           json: {
             message: stripeRedirectStatus === "failed" ? "fail" : "Success",
+            conversationId: window.gaGlobal?.vid,
           },
           timeout: false,
         },
