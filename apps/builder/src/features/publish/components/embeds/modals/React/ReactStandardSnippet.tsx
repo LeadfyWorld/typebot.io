@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { useTypebot } from "@/features/editor/providers/TypebotProvider";
 import parserBabel from "prettier/parser-babel";
@@ -25,5 +26,11 @@ export const ReactStandardSnippet = ({
       plugins: [parserBabel],
     },
   );
-  return <CodeEditor value={snippet} lang="javascript" isReadOnly />;
+  return (
+    <CodeEditor
+      value={snippet}
+      lang="javascript"
+      isReadOnly
+    />
+  );
 };

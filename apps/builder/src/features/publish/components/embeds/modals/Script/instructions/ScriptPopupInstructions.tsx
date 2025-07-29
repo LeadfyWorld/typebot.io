@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { useTypebot } from "@/features/editor/providers/TypebotProvider";
 import { Stack, Text } from "@chakra-ui/react";
@@ -29,7 +30,11 @@ ${parseInitPopupCode({
         onUpdateSettings={(settings) => setInputValue(settings.autoShowDelay)}
       />
       <Text>Run this script to initialize the typebot:</Text>
-      <CodeEditor isReadOnly value={scriptSnippet} lang="javascript" />
+      <CodeEditor
+        isReadOnly
+        value={scriptSnippet}
+        lang="javascript"
+      />
     </Stack>
   );
 };

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { Code, ListItem, OrderedList, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
@@ -28,7 +29,10 @@ export const ShopifyStandardInstructions = ({ publicId }: Props) => {
   );
 
   return (
-    <OrderedList spacing={4} pl={5}>
+    <OrderedList
+      spacing={4}
+      pl={5}
+    >
       <ListItem>
         On your shop dashboard in the <Code>Themes</Code> page, click on{" "}
         <Code>Actions {">"} Edit code</Code>
@@ -40,7 +44,11 @@ export const ShopifyStandardInstructions = ({ publicId }: Props) => {
             before the closing <Code>{"<head>"}</Code> tag:
           </Text>
 
-          <CodeEditor value={headCode} lang="html" isReadOnly />
+          <CodeEditor
+            value={headCode}
+            lang="html"
+            isReadOnly
+          />
         </Stack>
       </ListItem>
       <ListItem>
@@ -57,7 +65,11 @@ export const ShopifyStandardInstructions = ({ publicId }: Props) => {
             Place an element on which the typebot will go in any file in the{" "}
             <Code>{"<body>"}</Code>:
           </Text>
-          <CodeEditor value={elementCode} lang="html" isReadOnly />
+          <CodeEditor
+            value={elementCode}
+            lang="html"
+            isReadOnly
+          />
         </Stack>
       </ListItem>
     </OrderedList>

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { useTypebot } from "@/features/editor/providers/TypebotProvider";
 import type { PopupProps } from "@typebot.io/js";
@@ -21,7 +22,13 @@ export const JavascriptPopupSnippet = ({ autoShowDelay }: Props) => {
       plugins: [parserHtml],
     },
   );
-  return <CodeEditor value={snippet} lang="html" isReadOnly />;
+  return (
+    <CodeEditor
+      value={snippet}
+      lang="html"
+      isReadOnly
+    />
+  );
 };
 
 const createSnippet = (

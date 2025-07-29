@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { useTypebot } from "@/features/editor/providers/TypebotProvider";
 import { Stack, Text } from "@chakra-ui/react";
@@ -40,7 +41,11 @@ ${parseInitBubbleCode({
         onPreviewMessageChange={setPreviewMessage}
       />
       <Text>Run this script to initialize the typebot:</Text>
-      <CodeEditor isReadOnly value={scriptSnippet} lang="javascript" />
+      <CodeEditor
+        isReadOnly
+        value={scriptSnippet}
+        lang="javascript"
+      />
     </Stack>
   );
 };

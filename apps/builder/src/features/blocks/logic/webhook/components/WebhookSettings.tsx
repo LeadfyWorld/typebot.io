@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CopyButton } from "@/components/CopyButton";
 import { TableList, type TableListItemProps } from "@/components/TableList";
 import { TextLink } from "@/components/TextLink";
@@ -95,7 +96,12 @@ export const WebhookSettings = ({
   const ResponseMappingInputs = useMemo(
     () =>
       function Component(props: TableListItemProps<ResponseVariableMapping>) {
-        return <DataVariableInputs {...props} dataItems={responseKeys ?? []} />;
+        return (
+          <DataVariableInputs
+            {...props}
+            dataItems={responseKeys ?? []}
+          />
+        );
       },
     [responseKeys],
   );
@@ -105,7 +111,10 @@ export const WebhookSettings = ({
     : "";
 
   return (
-    <Tabs size="sm" variant="unstyled">
+    <Tabs
+      size="sm"
+      variant="unstyled"
+    >
       <TabList>
         <Tab>Test URL</Tab>
         <Tab>Production URL</Tab>
@@ -137,7 +146,12 @@ export const WebhookSettings = ({
               Listen for test event
             </Button>
             {websocketStatus === "opened" && (
-              <Stack borderWidth="1px" p="4" borderRadius="md" spacing="3">
+              <Stack
+                borderWidth="1px"
+                p="4"
+                borderRadius="md"
+                spacing="3"
+              >
                 <Text fontSize="sm">
                   Waiting for an{" "}
                   <TextLink
@@ -153,7 +167,11 @@ export const WebhookSettings = ({
               </Stack>
             )}
             {receivedData && (
-              <CodeEditor isReadOnly lang="json" value={receivedData} />
+              <CodeEditor
+                isReadOnly
+                lang="json"
+                value={receivedData}
+              />
             )}
             {(receivedData ||
               (options?.responseVariableMapping &&

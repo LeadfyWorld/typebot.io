@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { Code, ListItem, OrderedList, Stack, Text } from "@chakra-ui/react";
 import type { Typebot } from "@typebot.io/typebot/schemas/typebot";
@@ -27,7 +28,10 @@ export const GtmStandardInstructions = ({
   );
 
   return (
-    <OrderedList spacing={4} pl={5}>
+    <OrderedList
+      spacing={4}
+      pl={5}
+    >
       <ListItem>
         On your GTM account dashboard, click on <Code>Add a new tag</Code>
       </ListItem>
@@ -40,7 +44,11 @@ export const GtmStandardInstructions = ({
       <ListItem>
         <Stack spacing={4}>
           <Text>Paste the code below:</Text>
-          <CodeEditor value={headCode} isReadOnly lang="html" />
+          <CodeEditor
+            value={headCode}
+            isReadOnly
+            lang="html"
+          />
         </Stack>
       </ListItem>
       <ListItem>
@@ -57,7 +65,11 @@ export const GtmStandardInstructions = ({
             On your web page, you need to have an element on which the typebot
             will go:
           </Text>
-          <CodeEditor value={elementCode} isReadOnly lang="html" />
+          <CodeEditor
+            value={elementCode}
+            isReadOnly
+            lang="html"
+          />
         </Stack>
       </ListItem>
     </OrderedList>

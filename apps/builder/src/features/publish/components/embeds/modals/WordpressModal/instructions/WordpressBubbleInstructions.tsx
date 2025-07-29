@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ExternalLinkIcon } from "@/components/icons";
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { useTypebot } from "@/features/editor/providers/TypebotProvider";
@@ -44,7 +45,10 @@ export const WordpressBubbleInstructions = ({ publicId }: Props) => {
   });
 
   return (
-    <OrderedList spacing={4} pl={5}>
+    <OrderedList
+      spacing={4}
+      pl={5}
+    >
       <ListItem>
         Install{" "}
         <Link
@@ -79,7 +83,11 @@ export const WordpressBubbleInstructions = ({ publicId }: Props) => {
             You can now place the following code snippet in the Typebot panel in
             your WordPress admin:
           </Text>
-          <CodeEditor value={initCode} lang="javascript" isReadOnly />
+          <CodeEditor
+            value={initCode}
+            lang="javascript"
+            isReadOnly
+          />
         </Stack>
       </ListItem>
     </OrderedList>

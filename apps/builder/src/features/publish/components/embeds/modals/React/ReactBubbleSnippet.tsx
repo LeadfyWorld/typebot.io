@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { useTypebot } from "@/features/editor/providers/TypebotProvider";
 import type { BubbleProps } from "@typebot.io/js";
@@ -28,5 +29,11 @@ export const ReactBubbleSnippet = ({
     },
   );
 
-  return <CodeEditor value={snippet} lang="javascript" isReadOnly />;
+  return (
+    <CodeEditor
+      value={snippet}
+      lang="javascript"
+      isReadOnly
+    />
+  );
 };

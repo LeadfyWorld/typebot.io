@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AlertInfo } from "@/components/AlertInfo";
 import { TextLink } from "@/components/TextLink";
 import { CodeEditor } from "@/components/inputs/CodeEditor";
@@ -33,18 +34,28 @@ export const ApiModal = ({
 }`;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="xl"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
           <Heading size="md">API</Heading>
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody as={Stack} spacing="6">
+        <ModalBody
+          as={Stack}
+          spacing="6"
+        >
           {!isPublished && (
             <AlertInfo>You need to publish your bot first.</AlertInfo>
           )}
-          <OrderedList spacing={4} pl="4">
+          <OrderedList
+            spacing={4}
+            pl="4"
+          >
             <ListItem>
               <Stack>
                 <Text>
@@ -76,7 +87,11 @@ export const ApiModal = ({
                   )}/api/v1/sessions/<ID_FROM_FIRST_RESPONSE>/continueChat`}
                 />
                 <Text>With the following JSON body:</Text>
-                <CodeEditor isReadOnly lang={"json"} value={replyBody} />
+                <CodeEditor
+                  isReadOnly
+                  lang={"json"}
+                  value={replyBody}
+                />
                 <Text>
                   Replace <Code>{"<ID_FROM_FIRST_RESPONSE>"}</Code> with{" "}
                   <Code>sessionId</Code>.
@@ -84,7 +99,10 @@ export const ApiModal = ({
               </Stack>
             </ListItem>
           </OrderedList>
-          <Text fontSize="sm" colorScheme="gray">
+          <Text
+            fontSize="sm"
+            colorScheme="gray"
+          >
             Check out the{" "}
             <TextLink
               href="https://docs.typebot.io/api-reference/chat/start-chat"

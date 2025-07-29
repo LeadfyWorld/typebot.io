@@ -1815,6 +1815,10 @@
                       "markdown"
                     ],
                     "default": "richText"
+                  },
+                  "conversationId": {
+                    "type": "string",
+                    "description": "ID from lead / vid"
                   }
                 }
               }
@@ -1835,6 +1839,30 @@
                     },
                     "resultId": {
                       "type": "string"
+                    },
+                    "virtualAssistantId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "conversationLead": {
+                      "type": "object",
+                      "nullable": true,
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "phone": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "email",
+                        "phone"
+                      ]
                     },
                     "typebot": {
                       "type": "object",
@@ -2026,6 +2054,9 @@
                           }
                         ]
                       }
+                    },
+                    "chunks": {
+                      "description": "If the chat is streamed, this field will contain the streamed chunks of the last message."
                     },
                     "input": {
                       "allOf": [
@@ -2577,6 +2608,9 @@
                           }
                         ]
                       }
+                    },
+                    "chunks": {
+                      "description": "If the chat is streamed, this field will contain the streamed chunks of the last message."
                     },
                     "input": {
                       "allOf": [
@@ -3159,6 +3193,30 @@
                       "type": "string",
                       "description": "To save and use for /continueChat requests."
                     },
+                    "virtualAssistantId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "conversationLead": {
+                      "type": "object",
+                      "nullable": true,
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "phone": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "email",
+                        "phone"
+                      ]
+                    },
                     "typebot": {
                       "type": "object",
                       "properties": {
@@ -3349,6 +3407,9 @@
                           }
                         ]
                       }
+                    },
+                    "chunks": {
+                      "description": "If the chat is streamed, this field will contain the streamed chunks of the last message."
                     },
                     "input": {
                       "allOf": [

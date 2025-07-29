@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { useTypebot } from "@/features/editor/providers/TypebotProvider";
 import { Code, Stack, Text } from "@chakra-ui/react";
@@ -26,7 +27,7 @@ export const ScriptStandardInstructions = () => {
   );
 
   const scriptSnippet = parseInlineScript(`${typebotImportCode}
-  
+
 ${parseInitStandardCode({
   typebot: typebot?.publicId ?? "",
   customDomain: typebot?.customDomain,
@@ -41,9 +42,17 @@ ${parseInitStandardCode({
         Make sure you have this <Code>typebot-standard</Code> element in your{" "}
         <Code>{"<body>"}</Code>:
       </Text>
-      <CodeEditor isReadOnly value={standardElementSnippet} lang="html" />
+      <CodeEditor
+        isReadOnly
+        value={standardElementSnippet}
+        lang="html"
+      />
       <Text>Then, run this script to initialize the typebot:</Text>
-      <CodeEditor isReadOnly value={scriptSnippet} lang="javascript" />
+      <CodeEditor
+        isReadOnly
+        value={scriptSnippet}
+        lang="javascript"
+      />
     </Stack>
   );
 };

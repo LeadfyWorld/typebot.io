@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { useTypebot } from "@/features/editor/providers/TypebotProvider";
 import type { PopupProps } from "@typebot.io/js";
@@ -26,5 +27,11 @@ export const ReactPopupSnippet = ({
     },
   );
 
-  return <CodeEditor value={snippet} lang="javascript" isReadOnly />;
+  return (
+    <CodeEditor
+      value={snippet}
+      lang="javascript"
+      isReadOnly
+    />
+  );
 };

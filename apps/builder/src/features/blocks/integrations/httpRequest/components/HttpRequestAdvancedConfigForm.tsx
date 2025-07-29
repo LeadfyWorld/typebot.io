@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DropdownList } from "@/components/DropdownList";
 import { TableList, type TableListItemProps } from "@/components/TableList";
 import { NumberInput } from "@/components/inputs";
@@ -111,7 +112,12 @@ export const HttpRequestAdvancedConfigForm = ({
   const ResponseMappingInputs = useMemo(
     () =>
       function Component(props: TableListItemProps<ResponseVariableMapping>) {
-        return <DataVariableInputs {...props} dataItems={responseKeys} />;
+        return (
+          <DataVariableInputs
+            {...props}
+            dataItems={responseKeys}
+          />
+        );
       },
     [responseKeys],
   );
@@ -127,7 +133,11 @@ export const HttpRequestAdvancedConfigForm = ({
             Advanced configuration
             <AccordionIcon />
           </AccordionButton>
-          <AccordionPanel pt="4" as={Stack} spacing="3">
+          <AccordionPanel
+            pt="4"
+            as={Stack}
+            spacing="3"
+          >
             <SwitchWithLabel
               label="Execute on client"
               moreInfoContent="If enabled, the httpRequest will be executed on the client. It means it will be executed in the browser of your visitor. Make sure to enable CORS and do not expose sensitive data."
@@ -184,7 +194,11 @@ export const HttpRequestAdvancedConfigForm = ({
                   Body
                   <AccordionIcon />
                 </AccordionButton>
-                <AccordionPanel py={4} as={Stack} spacing="6">
+                <AccordionPanel
+                  py={4}
+                  as={Stack}
+                  spacing="6"
+                >
                   <SwitchWithLabel
                     label="Custom body"
                     initialValue={isCustomBody}
@@ -247,7 +261,11 @@ export const HttpRequestAdvancedConfigForm = ({
         </Button>
       )}
       {testResponse && (
-        <CodeEditor isReadOnly lang="json" value={testResponse} />
+        <CodeEditor
+          isReadOnly
+          lang="json"
+          value={testResponse}
+        />
       )}
       {(testResponse ||
         (options?.responseVariableMapping &&

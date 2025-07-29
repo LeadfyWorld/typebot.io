@@ -63,7 +63,7 @@ import { TextInput } from "./inputs/TextInput";
 export type BotProps = {
   id?: string;
   typebot: string | StartTypebot | undefined;
-  leadInfo: null | {
+  leadInfo?: null | {
     name: string;
     email: string;
     phone: string;
@@ -196,7 +196,7 @@ export const Bot = (props: BotProps & { class?: string }) => {
         ) {
           setInitialChatReply(initialChatInStorage);
 
-          if (props.setLead) {
+          if (props.setLead && data.conversationLead) {
             props.setLead(data.conversationLead);
           }
         } else {
@@ -208,7 +208,7 @@ export const Bot = (props: BotProps & { class?: string }) => {
             storage,
           });
 
-          if (props.setLead) {
+          if (props.setLead && data.conversationLead) {
             props.setLead(data.conversationLead);
           }
         }
@@ -219,7 +219,7 @@ export const Bot = (props: BotProps & { class?: string }) => {
           storage,
         });
 
-        if (props.setLead) {
+        if (props.setLead && data.conversationLead) {
           props.setLead(data.conversationLead);
         }
       }
@@ -227,7 +227,7 @@ export const Bot = (props: BotProps & { class?: string }) => {
     } else {
       wipeExistingChatStateInStorage(data.typebot.id);
       setInitialChatReply(data);
-      if (props.setLead) {
+      if (props.setLead && data.conversationLead) {
         props.setLead(data.conversationLead);
       }
       if (data.input?.id && props.onNewInputBlock)

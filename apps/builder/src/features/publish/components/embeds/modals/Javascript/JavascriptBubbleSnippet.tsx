@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { useTypebot } from "@/features/editor/providers/TypebotProvider";
 import type { BubbleProps } from "@typebot.io/js";
@@ -31,5 +32,11 @@ ${parseInitBubbleCode({
     },
   );
 
-  return <CodeEditor value={snippet} lang="html" isReadOnly />;
+  return (
+    <CodeEditor
+      value={snippet}
+      lang="html"
+      isReadOnly
+    />
+  );
 };

@@ -252,7 +252,7 @@ export const startChatInputSchema = z.object({
       },
     }),
   textBubbleContentFormat: z.enum(["richText", "markdown"]).default("richText"),
-  conversationId: z.string().describe("ID from lead / vid"),
+  conversationId: z.string().describe("ID from lead / vid").optional(),
 });
 export type StartChatInput = z.infer<typeof startChatInputSchema>;
 
@@ -402,14 +402,15 @@ export const startChatResponseSchema = z
       .string()
       .describe("To save and use for /continueChat requests."),
     resultId: z.string().optional(),
-    virtualAssistantId: z.string().nullable(),
+    virtualAssistantId: z.string().nullable().optional(),
     conversationLead: z
       .object({
         name: z.string(),
         email: z.string(),
         phone: z.string(),
       })
-      .nullable(),
+      .nullable()
+      .optional(),
     typebot: z.object({
       id: z.string(),
       version: z.union([

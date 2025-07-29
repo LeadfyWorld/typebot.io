@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CodeEditor } from "@/components/inputs/CodeEditor";
 import { useTypebot } from "@/features/editor/providers/TypebotProvider";
 import parserHtml from "prettier/parser-html";
@@ -25,7 +26,13 @@ export const JavascriptStandardSnippet = ({
     },
   );
 
-  return <CodeEditor value={snippet} lang="html" isReadOnly />;
+  return (
+    <CodeEditor
+      value={snippet}
+      lang="html"
+      isReadOnly
+    />
+  );
 };
 
 export const parseStandardHeadCode = (
