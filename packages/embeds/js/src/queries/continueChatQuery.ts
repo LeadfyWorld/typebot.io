@@ -6,24 +6,16 @@ import type {
 import { isNotEmpty } from "@typebot.io/lib/utils";
 import ky from "ky";
 
-declare global {
-  interface Window {
-    gaGlobal?: {
-      vid?: string;
-      [key: string]: any;
-    };
-  }
-}
-
 export const continueChatQuery = async ({
   apiHost,
   message,
-  sessionId,
   virtualAssistantId,
+  conversationId,
 }: {
   apiHost?: string;
   message?: Message;
-  virtualAssistantId?: string | null;
+  virtualAssistantId: string;
+  conversationId: string;
   sessionId: string;
 }) => {
   try {
@@ -35,7 +27,7 @@ export const continueChatQuery = async ({
         {
           json: {
             message,
-            conversationId: window.gaGlobal?.vid,
+            conversationId: conversationId,
           },
           timeout: false,
         },

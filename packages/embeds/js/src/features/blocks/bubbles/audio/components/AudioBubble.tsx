@@ -6,6 +6,7 @@ import { createSignal, onCleanup, onMount } from "solid-js";
 
 type Props = {
   content: AudioBubbleBlock["content"];
+  createdAt: string | null;
   onTransitionEnd?: (ref?: HTMLDivElement) => void;
 };
 

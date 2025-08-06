@@ -3,6 +3,7 @@ import {
   ChatContainerSizeContext,
   createChatContainerProviderValue,
 } from "@/contexts/ChatContainerSizeContext";
+import { isDateInSchedule } from "@/lib/date";
 import { textColor } from "@/lib/textColor";
 import { setChatLeadQuery, startChatQuery } from "@/queries/startChatQuery";
 import type { BotContext } from "@/types";
@@ -243,14 +244,20 @@ export const Bot = (props: BotProps & { class?: string }) => {
   };
 
   createEffect(() => {
-    if (isNotDefined(props.typebot) || isInitialized()) return;
+    if (isNotDefined(props.typebot) || isInitialized()) {
+      return;
+    }
+
     initializeBot().then();
   });
 
   createEffect(() => {
-    if (isNotDefined(props.typebot) || typeof props.typebot === "string")
+    if (isNotDefined(props.typebot) || typeof props.typebot === "string") {
       return;
+    }
+
     setCustomCss(props.typebot.theme.customCss ?? "");
+
     if (
       props.typebot.theme.general?.progressBar?.isEnabled &&
       initialChatReply() &&
@@ -282,7 +289,7 @@ export const Bot = (props: BotProps & { class?: string }) => {
       >
         {(initialChatReply) => (
           <>
-            {props.leadInfo ? (
+            {props.leadInfo && (
               <BotContent
                 closeBot={props.closeBot}
                 class={props.class}
@@ -328,7 +335,9 @@ export const Bot = (props: BotProps & { class?: string }) => {
                 onEnd={props.onEnd}
                 onScriptExecutionSuccess={props.onScriptExecutionSuccess}
               />
-            ) : (
+            )}
+
+            {!props.leadInfo && (
               <BotFormContent
                 class={props.class}
                 closeBot={props.closeBot}
@@ -415,7 +424,9 @@ const BotContent = (props: BotContentProps) => {
       },
     );
 
-    if (!botContainer) return;
+    if (!botContainer) {
+      return;
+    }
 
     setCssVariablesValue({
       theme: mergeThemes(
@@ -433,7 +444,10 @@ const BotContent = (props: BotContentProps) => {
   });
 
   const botContainerHeight = createMemo(() => {
-    if (!botContainer) return "100%";
+    if (!botContainer) {
+      return "100%";
+    }
+
     return botContainer.clientHeight;
   });
 
@@ -488,7 +502,14 @@ const BotContent = (props: BotContentProps) => {
               {props.initialChatReply.typebot.theme.general?.name}
             </p>
 
-            <p class="text-md font-normal text-gray-600">Online</p>
+            <p class="text-md font-normal text-gray-600">
+              {isDateInSchedule(
+                props.initialChatReply.typebot.settings.schedules,
+                new Date(),
+              )
+                ? "Online"
+                : "Offline"}
+            </p>
           </div>
 
           {props.closeBot && (

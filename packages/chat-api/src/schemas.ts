@@ -167,7 +167,10 @@ const customBubbleSchema = z
 export type CustomEmbedBubble = z.infer<typeof customBubbleSchema>;
 
 export const chatBubbleSchema = z
-  .object({ id: z.string() })
+  .object({
+    id: z.string(),
+    createdAt: z.string().nullable(),
+  })
   .and(
     z.discriminatedUnion("type", [
       textBubbleSchema,
@@ -372,6 +375,7 @@ const chatResponseBaseSchema = z.object({
     .and(
       z.object({
         prefilledValue: z.string().optional(),
+        createdAt: z.string().nullable(),
         runtimeOptions: runtimeOptionsSchema.optional(),
       }),
     )
@@ -403,7 +407,8 @@ export const startChatResponseSchema = z
       .string()
       .describe("To save and use for /continueChat requests."),
     resultId: z.string().optional(),
-    virtualAssistantId: z.string().nullable().optional(),
+    virtualAssistantId: z.string(),
+    conversationId: z.string(),
     conversationLead: z
       .object({
         name: z.string(),
@@ -422,6 +427,7 @@ export const startChatResponseSchema = z
       settings: settingsSchema.pick({
         general: true,
         typingEmulation: true,
+        schedules: true,
       }),
       publishedAt: z.coerce.date().optional(),
     }),

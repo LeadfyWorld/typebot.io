@@ -80,6 +80,7 @@ export const InputChatBlock = (props: Props) => {
           error={props.error}
           answer={props.input.answer}
           theme={props.theme}
+          createdAt={props.input.createdAt}
         />
       </Match>
 
@@ -93,8 +94,16 @@ export const InputChatBlock = (props: Props) => {
           class="flex justify-end animate-fade-in gap-1 @xs:gap-2 typebot-input-container"
           data-blockid={props.input.id}
           ref={props.ref}
+          onClick={(event) => {
+            const textarea = event.currentTarget.querySelector(
+              "textarea",
+            ) as HTMLInputElement | null;
+
+            if (textarea) {
+              textarea.focus();
+            }
+          }}
           style={{
-            // "border-top": "1px solid #ebebeb",
             position: "absolute",
             bottom: "40px",
             width: "calc(100% - 30px)",
@@ -112,8 +121,8 @@ export const InputChatBlock = (props: Props) => {
               padding: "10px",
               background:
                 props.context.typebot.theme.chat?.inputs?.backgroundColor,
-              "border-radius": "7px",
               flex: 1,
+              "border-radius": "7px",
             }}
           >
             {/* <Show
@@ -147,7 +156,10 @@ export const InputChatBlock = (props: Props) => {
 };
 
 const getAnswerValue = (answer?: InputSubmitContent) => {
-  if (!answer) return;
+  if (!answer) {
+    return;
+  }
+
   return answer.type === "text" ? answer.value : answer.url;
 };
 
@@ -161,17 +173,21 @@ const Input = (props: {
   onSubmit: (answer: InputSubmitContent) => void;
   onSkip: (label: string) => void;
 }) => {
-  const getPrefilledValue = () =>
-    props.existingAnswer ??
-    (props.isInputPrefillEnabled ? props.block.prefilledValue : undefined);
+  const getPrefilledValue = () => {
+    return (
+      props.existingAnswer ??
+      (props.isInputPrefillEnabled ? props.block.prefilledValue : undefined)
+    );
+  };
 
-  const submitPaymentSuccess = () =>
+  const submitPaymentSuccess = () => {
     props.onSubmit({
       type: "text",
       value:
         (props.block.options as PaymentInputBlock["options"])?.labels
           ?.success ?? defaultPaymentInputOptions.labels.success,
     });
+  };
 
   return (
     <Switch>

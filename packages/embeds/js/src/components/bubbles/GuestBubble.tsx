@@ -1,4 +1,5 @@
 import { FilePreview } from "@/features/blocks/inputs/fileUpload/components/FilePreview";
+import { formatMessageDate } from "@/lib/date";
 import type {
   InputSubmitContent,
   RecordingInputSubmitContent,
@@ -20,6 +21,7 @@ type Props = {
   answer?: InputSubmitContent;
   theme: Theme;
   error: string | null;
+  createdAt: string | null;
 };
 
 export const GuestBubble = (props: Props) => {
@@ -35,6 +37,7 @@ export const GuestBubble = (props: Props) => {
       <Switch>
         <Match when={props.answer?.type === "text"}>
           <TextGuestBubble
+            createdAt={props.createdAt}
             error={props.error}
             answer={props.answer as TextInputSubmitContent}
           />
@@ -42,6 +45,7 @@ export const GuestBubble = (props: Props) => {
 
         <Match when={props.answer?.type === "recording"}>
           <AudioGuestBubble
+            createdAt={props.createdAt}
             error={props.error}
             answer={props.answer as RecordingInputSubmitContent}
           />
@@ -69,6 +73,7 @@ export const GuestBubble = (props: Props) => {
 const TextGuestBubble = (props: {
   answer: TextInputSubmitContent;
   error: string | null;
+  createdAt: string | null;
 }) => {
   const [clickedImageSrc, setClickedImageSrc] = createSignal<string>();
 
@@ -116,68 +121,85 @@ const TextGuestBubble = (props: {
       </Show>
 
       <div
-        class={`p-[1px] whitespace-pre-wrap max-w-full typebot-guest-bubble ${props.error ? "typebot-guest-bubble-error" : ""} flex flex-col px-[15px] py-[7px]`}
+        class={`p-[1px] whitespace-pre-wrap max-w-full typebot-guest-bubble ${props.error ? "typebot-guest-bubble-error" : ""} px-[15px] py-[7px]`}
         data-testid="guest-bubble"
-        style={{
-          display: "flex",
-          "flex-direction": "row",
-          "align-items": "center",
-        }}
       >
-        <Show
-          when={
-            isNotEmpty(props.answer.label ?? props.answer.value) && !props.error
-          }
+        <div
+          class="flex flex-col"
+          style={{
+            display: "flex",
+            "flex-direction": "row",
+            "align-items": "center",
+          }}
         >
-          <span>{props.answer.label ?? props.answer.value}</span>
-        </Show>
-
-        <Show
-          when={
-            isNotEmpty(props.answer.label ?? props.answer.value) && props.error
-          }
-        >
-          <div
-            class="relative group"
-            style={{ display: "inline-block" }}
+          <Show
+            when={
+              isNotEmpty(props.answer.label ?? props.answer.value) &&
+              !props.error
+            }
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-triangle-alert-icon lucide-triangle-alert"
-              style={{
-                "margin-right": "15px",
-                display: "inline-block",
-              }}
-            >
-              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
-              <path d="M12 9v4" />
-              <path d="M12 17h.01" />
-            </svg>
-
-            <span
-              class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-2 py-1 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 whitespace-nowrap"
-              style={{
-                right: 0,
-                "white-space": "normal",
-                margin: 0,
-                width: "100%",
-                "word-break": "break-word",
-              }}
-            >
-              {props.error}
-            </span>
-
             <span>{props.answer.label ?? props.answer.value}</span>
-          </div>
-        </Show>
+          </Show>
+
+          <Show
+            when={
+              isNotEmpty(props.answer.label ?? props.answer.value) &&
+              props.error
+            }
+          >
+            <div
+              class="relative group"
+              style={{ display: "inline-block" }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-triangle-alert-icon lucide-triangle-alert"
+                style={{
+                  "margin-right": "15px",
+                  display: "inline-block",
+                }}
+              >
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+                <path d="M12 9v4" />
+                <path d="M12 17h.01" />
+              </svg>
+
+              <span
+                class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-2 py-1 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 whitespace-nowrap"
+                style={{
+                  right: 0,
+                  "white-space": "normal",
+                  margin: 0,
+                  width: "100%",
+                  "word-break": "break-word",
+                }}
+              >
+                {props.error}
+              </span>
+
+              <span>{props.answer.label ?? props.answer.value}</span>
+            </div>
+          </Show>
+        </div>
+
+        <div
+          style={{
+            opacity: "0.6",
+            "font-size": "9px",
+            "line-height": "13px",
+            "margin-top": "5px",
+          }}
+        >
+          {formatMessageDate(props.createdAt)}
+        </div>
       </div>
 
       <Modal
@@ -197,6 +219,7 @@ const TextGuestBubble = (props: {
 const AudioGuestBubble = (props: {
   answer: RecordingInputSubmitContent;
   error: string | null;
+  createdAt: string | null;
 }) => {
   return (
     <div class="flex flex-col gap-1 items-end">

@@ -1,4 +1,5 @@
 import { TypingBubble } from "@/components/TypingBubble";
+import { formatMessageDate } from "@/lib/date";
 import type { TextBubbleBlock } from "@typebot.io/blocks-bubbles/text/schema";
 import { computeTypingDuration } from "@typebot.io/settings/computeTypingDuration";
 import type { Settings } from "@typebot.io/settings/schemas";
@@ -11,6 +12,7 @@ type Props = {
   content: TextBubbleBlock["content"];
   typingEmulation: Settings["typingEmulation"];
   isTypingSkipped: boolean;
+  createdAt: string | null;
   onTransitionEnd?: (ref?: HTMLDivElement) => void;
 };
 
@@ -71,6 +73,7 @@ export const TextBubble = (props: Props) => {
           >
             {isTyping() && <TypingBubble />}
           </div>
+
           <div
             class={cx(
               "overflow-hidden text-fade-in mx-4 my-2 whitespace-pre-wrap slate-html-container relative text-ellipsis",
@@ -80,6 +83,17 @@ export const TextBubble = (props: Props) => {
             <For each={props.content?.richText}>
               {(element) => <PlateElement element={element} />}
             </For>
+
+            <div
+              style={{
+                opacity: "0.6",
+                "font-size": "9px",
+                "line-height": "7px",
+                "margin-top": "5px",
+              }}
+            >
+              {formatMessageDate(props.createdAt)}
+            </div>
           </div>
         </div>
       </div>

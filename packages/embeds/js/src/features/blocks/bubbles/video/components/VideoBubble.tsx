@@ -15,6 +15,7 @@ import { Match, Switch, createSignal, onCleanup, onMount } from "solid-js";
 
 type Props = {
   content: VideoBubbleBlock["content"];
+  createdAt: string | null;
   onTransitionEnd?: (ref?: HTMLDivElement) => void;
 };
 

@@ -7,6 +7,7 @@ import { createSignal, onCleanup, onMount } from "solid-js";
 
 type Props = {
   content: ImageBubbleBlock["content"];
+  createdAt: string | null;
   onTransitionEnd?: (ref?: HTMLDivElement) => void;
 };
 
@@ -125,7 +126,11 @@ export const ImageBubble = (props: Props) => {
           )}
         </div>
       </div>
-      <Modal isOpen={isExpanded()} onClose={closeModal}>
+
+      <Modal
+        isOpen={isExpanded()}
+        onClose={closeModal}
+      >
         <img
           src={props.content?.url}
           alt={

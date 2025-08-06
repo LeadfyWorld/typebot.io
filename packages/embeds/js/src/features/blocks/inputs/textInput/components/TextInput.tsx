@@ -380,6 +380,7 @@ export const TextInput = (props: Props) => {
             <MicrophoneIcon class="flex w-6 h-6" />
           </Button>
         </Match>
+
         <Match when={true}>
           <SendButton
             type="button"

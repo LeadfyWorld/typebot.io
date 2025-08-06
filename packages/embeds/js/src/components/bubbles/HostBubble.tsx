@@ -11,8 +11,10 @@ import type { EmbedBubbleBlock } from "@typebot.io/blocks-bubbles/embed/schema";
 import type { ImageBubbleBlock } from "@typebot.io/blocks-bubbles/image/schema";
 import type { TextBubbleBlock } from "@typebot.io/blocks-bubbles/text/schema";
 import type { VideoBubbleBlock } from "@typebot.io/blocks-bubbles/video/schema";
-import type { ChatBubble } from "@typebot.io/chat-api/schemas";
-import type { CustomEmbedBubble as CustomEmbedBubbleProps } from "@typebot.io/chat-api/schemas";
+import type {
+  ChatBubble,
+  CustomEmbedBubble as CustomEmbedBubbleProps,
+} from "@typebot.io/chat-api/schemas";
 import type { Settings } from "@typebot.io/settings/schemas";
 import { Match, Switch } from "solid-js";
 
@@ -28,40 +30,51 @@ export const HostBubble = (props: Props) => (
   <Switch>
     <Match when={props.message.type === BubbleBlockType.TEXT}>
       <TextBubble
+        createdAt={props.message.createdAt}
         content={props.message.content as TextBubbleBlock["content"]}
         isTypingSkipped={props.isTypingSkipped}
         typingEmulation={props.typingEmulation}
         onTransitionEnd={props.onTransitionEnd}
       />
     </Match>
+
     <Match when={props.message.type === BubbleBlockType.IMAGE}>
       <ImageBubble
+        createdAt={props.message.createdAt}
         content={props.message.content as ImageBubbleBlock["content"]}
         onTransitionEnd={props.onTransitionEnd}
       />
     </Match>
+
     <Match when={props.message.type === BubbleBlockType.VIDEO}>
       <VideoBubble
+        createdAt={props.message.createdAt}
         content={props.message.content as VideoBubbleBlock["content"]}
         onTransitionEnd={props.onTransitionEnd}
       />
     </Match>
+
     <Match when={props.message.type === BubbleBlockType.EMBED}>
       <EmbedBubble
+        createdAt={props.message.createdAt}
         content={props.message.content as EmbedBubbleBlock["content"]}
         onTransitionEnd={props.onTransitionEnd}
         onCompleted={props.onCompleted}
       />
     </Match>
+
     <Match when={props.message.type === "custom-embed"}>
       <CustomEmbedBubble
+        createdAt={props.message.createdAt}
         content={props.message.content as CustomEmbedBubbleProps["content"]}
         onTransitionEnd={props.onTransitionEnd}
         onCompleted={props.onCompleted}
       />
     </Match>
+
     <Match when={props.message.type === BubbleBlockType.AUDIO}>
       <AudioBubble
+        createdAt={props.message.createdAt}
         content={props.message.content as AudioBubbleBlock["content"]}
         onTransitionEnd={props.onTransitionEnd}
       />

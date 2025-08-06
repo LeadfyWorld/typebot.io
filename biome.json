@@ -123,6 +123,7 @@
       "./apps/landing-page/app/routes/_layout/blog/$slug.tsx",
       "./apps/builder/src/components/inputs/CodeEditor.tsx",
       "./packages/embeds/js/src/components/bubbles/GuestBubble.tsx",
+      "./packages/embeds/js/src/features/blocks/bubbles/image/components/ImageBubble.tsx",
       "openapi/*.json",
       "routeTree.gen.ts",
       "i18n-ally-custom-framework.yml",

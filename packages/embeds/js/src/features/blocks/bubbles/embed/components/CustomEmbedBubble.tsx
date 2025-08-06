@@ -7,6 +7,7 @@ import { createSignal, onCleanup, onMount } from "solid-js";
 
 type Props = {
   content: CustomEmbedBubbleProps["content"];
+  createdAt: string | null;
   onTransitionEnd?: (ref?: HTMLDivElement) => void;
   onCompleted: (reply?: InputSubmitContent) => void;
 };

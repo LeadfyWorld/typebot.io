@@ -14,6 +14,15 @@ import type {
 import { isNotDefined, isNotEmpty } from "@typebot.io/lib/utils";
 import ky from "ky";
 
+declare global {
+  interface Window {
+    gaGlobal?: {
+      vid?: string;
+      [key: string]: any;
+    };
+  }
+}
+
 type Props = {
   typebot: string | any;
   stripeRedirectStatus?: string;

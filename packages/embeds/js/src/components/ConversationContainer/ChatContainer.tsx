@@ -194,7 +194,11 @@ export const ChatContainer = (props: Props) => {
       setChatChunks((chunks) =>
         chunks.map((chunk, i) =>
           i === chunks.length - 1
-            ? { ...chunk, messages: [], streamingMessage: message }
+            ? {
+                ...chunk,
+                messages: [],
+                streamingMessage: message,
+              }
             : chunk,
         ),
       );
@@ -276,6 +280,7 @@ export const ChatContainer = (props: Props) => {
     const { data, error } = await continueChatQuery({
       apiHost: props.context.apiHost,
       virtualAssistantId: props.initialChatReply.virtualAssistantId,
+      conversationId: props.initialChatReply.conversationId,
       sessionId: props.initialChatReply.sessionId,
       message: convertSubmitContentToMessage(answer),
     });
@@ -327,6 +332,7 @@ export const ChatContainer = (props: Props) => {
           input: {
             id: "h2sw8y6emef1vhcchkoiroq3",
             type: InputBlockType.TEXT,
+            createdAt: null,
             options: {
               labels: {
                 placeholder: "",
@@ -334,7 +340,7 @@ export const ChatContainer = (props: Props) => {
               variableId: "vl69t19paxkk3k9vsbrghjovj",
               isLong: true,
               audioClip: {
-                isEnabled: true,
+                isEnabled: false,
                 saveVariableId: "vgtnvs8vk2mk2alwctrbph2sq",
               },
               attachments: {
@@ -634,6 +640,7 @@ export const ChatContainer = (props: Props) => {
       apiHost: props.context.apiHost,
       sessionId: props.initialChatReply.sessionId,
       virtualAssistantId: props.initialChatReply.virtualAssistantId,
+      conversationId: props.initialChatReply.conversationId,
       message: {
         type: "command",
         command,

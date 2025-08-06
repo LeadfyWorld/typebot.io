@@ -38,6 +38,7 @@ export const SendButton = (props: SendButtonProps) => {
             }
           />
         </Match>
+
         <Match when={!showIcon}>{props.children}</Match>
       </Switch>
     </Button>

@@ -80,6 +80,15 @@ export const settingsSchema = z
     typingEmulation: typingEmulation.optional(),
     metadata: metadataSchema.optional(),
     whatsApp: whatsAppSettingsSchema.optional(),
+    schedules: z
+      .array(
+        z.object({
+          days: z.array(z.string()),
+          end: z.string(),
+          start: z.string(),
+        }),
+      )
+      .optional(),
     publicShare: z
       .object({
         isEnabled: z.boolean().optional(),

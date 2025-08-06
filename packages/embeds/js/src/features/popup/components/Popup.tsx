@@ -30,6 +30,8 @@ export type PopupProps = BotProps &
     onClose?: () => void;
   };
 
+const disabled = true;
+
 export const Popup = (props: PopupProps) => {
   const [popupProps, botProps] = splitProps(props, [
     "onOpen",
@@ -147,6 +149,10 @@ export const Popup = (props: PopupProps) => {
       closeBot();
     props.onScriptExecutionSuccess?.(message);
   };
+
+  if (disabled) {
+    return null;
+  }
 
   return (
     <Show when={isBotOpened()}>

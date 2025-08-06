@@ -14,6 +14,8 @@ const hostElementCss = `
 }
 `;
 
+const disabled = true;
+
 export const Standard = (props: BotProps, { element }: { element: any }) => {
   const [isBotDisplayed, setIsBotDisplayed] = createSignal(false);
   const [prefilledVariables, setPrefilledVariables] = createSignal(
@@ -72,6 +74,10 @@ export const Standard = (props: BotProps, { element }: { element: any }) => {
   onCleanup(() => {
     botLauncherObserver.disconnect();
   });
+
+  if (disabled) {
+    return null;
+  }
 
   return (
     <EnvironmentProvider
