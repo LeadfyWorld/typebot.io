@@ -619,3 +619,30 @@ select option {
 .text-gray-800 {
   color: var(--color-gray-800);
 }
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid white; /* ensures visibility on any background */
+  position: relative;
+  display: inline-block;
+}
+
+.status-online {
+  background: radial-gradient(
+    circle at 30% 30%,
+    #4ade80,
+    #15803d
+  ); /* green with shine */
+  box-shadow: 0 0 4px rgba(74, 222, 128, 0.8); /* glowing effect */
+}
+
+.status-offline {
+  background: radial-gradient(
+    circle at 30% 30%,
+    #9ca3af,
+    #4b5563
+  ); /* gray with shine */
+  box-shadow: 0 0 3px rgba(156, 163, 175, 0.6);
+}

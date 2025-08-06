@@ -502,7 +502,18 @@ const BotContent = (props: BotContentProps) => {
               {props.initialChatReply.typebot.theme.general?.name}
             </p>
 
-            <p class="text-md font-normal text-gray-600">
+            <p class="text-md font-normal text-gray-600 flex items-center gap-1">
+              <span
+                class={`status-indicator ${
+                  isDateInSchedule(
+                    props.initialChatReply.typebot.settings.schedules,
+                    new Date(),
+                  )
+                    ? "status-online"
+                    : "status-offline"
+                }`}
+              ></span>
+
               {isDateInSchedule(
                 props.initialChatReply.typebot.settings.schedules,
                 new Date(),

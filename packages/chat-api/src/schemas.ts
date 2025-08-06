@@ -34,6 +34,7 @@ const textMessageSchema = z
   .object({
     type: z.literal("text"),
     text: z.string(),
+    createdAt: z.string(),
     attachedFileUrls: z
       .array(z.string())
       .optional()
@@ -50,6 +51,7 @@ const audioMessageSchema = z
   .object({
     type: z.literal("audio"),
     url: z.string(),
+    createdAt: z.string(),
   })
   .describe(
     "Can only be provided if current input block is a text input block that allows audio clips",
@@ -63,6 +65,7 @@ const commandMessageSchema = z
   .object({
     type: z.literal("command"),
     command: z.string(),
+    createdAt: z.string(),
   })
   .openapi({
     title: "Command",

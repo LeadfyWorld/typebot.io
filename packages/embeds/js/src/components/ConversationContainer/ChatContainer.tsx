@@ -643,6 +643,7 @@ export const ChatContainer = (props: Props) => {
       conversationId: props.initialChatReply.conversationId,
       message: {
         type: "command",
+        createdAt: new Date().toISOString(),
         command,
       },
     });
@@ -700,7 +701,7 @@ export const ChatContainer = (props: Props) => {
         <div
           ref={chatContainer}
           class={cx(
-            "@container typebot-chat-view w-full min-h-full flex flex-col items-center @xs:min-h-chat-container @xs:max-h-chat-container @xs:rounded-chat-container pt-5  max-w-chat-container h-full",
+            "@container typebot-chat-view w-full min-h-full flex flex-col items-center @xs:min-h-chat-container @xs:max-h-chat-container @xs:rounded-chat-container max-w-chat-container h-full",
             isChatContainerTransparent()
               ? undefined
               : "overflow-y-auto scroll-smooth scrollable-container",
@@ -733,6 +734,8 @@ export const ChatContainer = (props: Props) => {
               </button>
             </div>
           </Show>
+
+          <div class="w-full flex-shrink-0 typebot-bottom-spacer h-3" />
 
           <div class="w-full flex flex-col gap-2 @xs:px-5 px-3">
             <Index
@@ -773,34 +776,44 @@ export const ChatContainer = (props: Props) => {
             </Show>
           </div>
 
-          <BottomSpacer />
+          <div class="w-full flex-shrink-0 typebot-bottom-spacer h-3" />
         </div>
       </div>
     </ChatContainerSizeContext.Provider>
   );
 };
 
-// Needed because we need to simulate a bottom padding relative to the chat view height
-const BottomSpacer = () => (
-  <div class="w-full flex-shrink-0 typebot-bottom-spacer h-3" />
-);
-
 const convertSubmitContentToMessage = (
   answer: InputSubmitContent | ClientSideResult | undefined,
 ): Message | undefined => {
-  if (!answer) return;
-  if (answer.type === "clientSideResult")
+  if (!answer) {
+    return;
+  }
+
+  if (answer.type === "clientSideResult") {
     return {
       type: "text",
+      createdAt: new Date().toISOString(),
       text: answer.result,
     };
-  if (answer.type === "text")
+  }
+
+  if (answer.type === "text") {
     return {
       type: "text",
       text: answer.value,
+      createdAt: new Date().toISOString(),
       attachedFileUrls: answer.attachments?.map((attachment) => attachment.url),
     };
-  if (answer.type === "recording") return { type: "audio", url: answer.url };
+  }
+
+  if (answer.type === "recording") {
+    return {
+      type: "audio",
+      createdAt: new Date().toISOString(),
+      url: answer.url,
+    };
+  }
 };
 
 const getNextClientSideActionsBatch = ({
@@ -867,10 +880,21 @@ const addAnswerToLastChunk =
   (answer: NonNullable<NonNullable<ChatChunkType["input"]>["answer"]>) =>
   (chunks: ChatChunkType[]): ChatChunkType[] => {
     const lastChunk = chunks[chunks.length - 1];
-    if (!lastChunk || !lastChunk.input) return chunks;
+
+    if (!lastChunk || !lastChunk.input) {
+      return chunks;
+    }
+
     return chunks.map((chunk, i) =>
       i === chunks.length - 1
-        ? { ...chunk, input: { ...chunk.input!, answer } }
+        ? {
+            ...chunk,
+            input: {
+              ...chunk.input!,
+              answer,
+              createdAt: new Date().toISOString(),
+            },
+          }
         : chunk,
     );
   };
