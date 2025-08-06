@@ -373,12 +373,6 @@ const BotFormContent = (props: BotFormContentProps) => {
     const phone = formData.get("phone") as string;
 
     if (!name || !email || !phone) {
-      console.log({
-        name: !name,
-        email: !email,
-        phone: !phone,
-      });
-
       setError({
         name: !name,
         email: !email,

@@ -1,6 +1,7 @@
 type Props = {
   error: Error;
 };
+
 export const ErrorMessage = (props: Props) => {
   return (
     <div class="h-full flex justify-center items-center flex-col">

@@ -31,6 +31,10 @@ export const Standard = (props: BotProps, { element }: { element: any }) => {
     }, 1);
   };
 
+  const closeBot = () => {
+    setIsBotDisplayed(false);
+  };
+
   const botLauncherObserver = new IntersectionObserver((intersections) => {
     if (intersections.some((intersection) => intersection.isIntersecting))
       launchBot();
@@ -79,7 +83,11 @@ export const Standard = (props: BotProps, { element }: { element: any }) => {
         {hostElementCss}
       </style>
       <Show when={isBotDisplayed()}>
-        <Bot {...props} prefilledVariables={prefilledVariables()} />
+        <Bot
+          {...props}
+          closeBot={closeBot}
+          prefilledVariables={prefilledVariables()}
+        />
       </Show>
     </EnvironmentProvider>
   );

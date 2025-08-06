@@ -71,62 +71,24 @@ export const ChatContainer = (props: Props) => {
     isEmpty(props.initialChatReply.chunks)
       ? [
           {
-            version: "2",
-            input: props.initialChatReply.input,
-            messages: props.initialChatReply.messages,
             clientSideActions: props.initialChatReply.clientSideActions,
             dynamicTheme: props.initialChatReply.dynamicTheme,
+            messages: props.initialChatReply.messages,
+            input: props.initialChatReply.input,
+            version: "2",
           },
         ]
       : [
           {
-            version: "2",
-            input: props.initialChatReply.input,
-            messages: props.initialChatReply.messages,
             clientSideActions: props.initialChatReply.clientSideActions,
             dynamicTheme: props.initialChatReply.dynamicTheme,
+            messages: props.initialChatReply.messages,
+            input: props.initialChatReply.input,
+            version: "2",
           },
           ...props.initialChatReply.chunks,
         ],
   );
-
-  // console.log({
-  //   version: "2",
-  //   input: props.initialChatReply.input,
-  //   messages: props.initialChatReply.messages,
-  //   clientSideActions: props.initialChatReply.clientSideActions,
-  //   dynamicTheme: props.initialChatReply.dynamicTheme,
-  // });
-
-  // console.log(
-  //   "props.initialChatReply.chunks",
-  //   {
-  //     version: "2",
-  //     input: props.initialChatReply.input,
-  //     messages: props.initialChatReply.messages,
-  //     clientSideActions: props.initialChatReply.clientSideActions,
-  //     dynamicTheme: props.initialChatReply.dynamicTheme,
-  //   },
-  //   props.initialChatReply.chunks[0],
-  //   props.initialChatReply.chunks[1],
-  // );
-
-  // {
-  //   key: `typebot-${props.context.typebot.id}-chatChunks`,
-  //   storage: props.context.storage,
-  //   transformInitDataFromStorage: (data) => {
-  //     return migrateLegacyChatChunks(data, {
-  //       storage: props.context.storage,
-  //       typebotId: props.context.typebot.id,
-  //     });
-  //   },
-  //   onRecovered: () => {
-  //     setTimeout(() => {
-  //       getScrollContainer()?.scrollTo(0, getScrollContainer()!.scrollHeight);
-  //     }, 200);
-  //   },
-  // },
-  // );
 
   const [isEnded, setIsEnded] = persist(createSignal(false), {
     key: `typebot-${props.context.typebot.id}-isEnded`,
@@ -138,8 +100,47 @@ export const ChatContainer = (props: Props) => {
   const [isLastAutoScrollAtBottom, setIsLastAutoScrollAtBottom] =
     createSignal(true);
 
+  // Create a signal to track if at bottom
+  const [isAtBottom, setIsAtBottom] = createSignal(true);
+
+  const [onShowInput, setOnShowInput] = createSignal(false);
+
+  const handleShowInput = (show: boolean) => {
+    setOnShowInput(show);
+
+    if (show) {
+      setTimeout(() => {
+        autoScrollToBottom();
+      }, 100);
+    }
+  };
+
+  // Handler to check if at bottom
+  const updateIsAtBottom = () => {
+    if (!chatContainer) {
+      return;
+    }
+
+    const atBottom =
+      Math.abs(
+        chatContainer.scrollHeight -
+          chatContainer.scrollTop -
+          chatContainer.clientHeight,
+      ) < 200;
+
+    setIsAtBottom(atBottom);
+  };
+
   onMount(() => {
     window.addEventListener("message", processIncomingEvent);
+
+    if (chatContainer) {
+      chatContainer.addEventListener("scroll", updateIsAtBottom, {
+        passive: true,
+      });
+    }
+
+    updateIsAtBottom();
 
     (async () => {
       const isRecoveredFromStorage = chatChunks().length > 1;
@@ -166,6 +167,14 @@ export const ChatContainer = (props: Props) => {
     })();
   });
 
+  onCleanup(() => {
+    if (chatContainer) {
+      chatContainer.removeEventListener("scroll", updateIsAtBottom);
+    }
+
+    window.removeEventListener("message", processIncomingEvent);
+  });
+
   const getScrollContainer = () => {
     return botContainer()?.querySelector(".scrollable-container");
   };
@@ -178,7 +187,9 @@ export const ChatContainer = (props: Props) => {
 
   const streamMessage = ({ message }: { message: string }) => {
     setIsSending(false);
+
     setIsLastAutoScrollAtBottom(false);
+
     if (chatChunks().at(-1)?.streamingMessage) {
       setChatChunks((chunks) =>
         chunks.map((chunk, i) =>
@@ -224,9 +235,14 @@ export const ChatContainer = (props: Props) => {
   const sendMessage = async (
     answer?: InputSubmitContent | ClientSideResult,
   ) => {
+    autoScrollToBottom();
+
     const currentChunk = chatChunks().at(-1);
-    if (answer && answer.type !== "clientSideResult")
+
+    if (answer && answer.type !== "clientSideResult") {
       setChatChunks(addAnswerToLastChunk(answer));
+    }
+
     // Most likely had stream error, user just sent the same message back, we need to execute the stream client action again
     if (
       currentChunk?.clientSideActions &&
@@ -234,6 +250,7 @@ export const ChatContainer = (props: Props) => {
       currentChunk.input?.answer?.status === "retry"
     ) {
       await popClientSideActions();
+
       return;
     }
 
@@ -242,25 +259,45 @@ export const ChatContainer = (props: Props) => {
       answer &&
       answer.type !== "clientSideResult"
     ) {
-      if (props.onAnswer)
+      if (props.onAnswer) {
         props.onAnswer({
           message: getAnswerContent(answer),
           blockId: currentChunk.input.id,
         });
+      }
     }
 
     const longRequest = setTimeout(() => {
       setIsSending(true);
+
+      autoScrollToBottom();
     }, 1000);
-    autoScrollToBottom();
 
     const { data, error } = await continueChatQuery({
       apiHost: props.context.apiHost,
+      virtualAssistantId: props.initialChatReply.virtualAssistantId,
       sessionId: props.initialChatReply.sessionId,
       message: convertSubmitContentToMessage(answer),
     });
+
+    autoScrollToBottom();
+
     clearTimeout(longRequest);
+
     setIsSending(false);
+
+    if (error && "message" in error) {
+      setChatChunks((chunks) =>
+        chunks.map((chunk, i) =>
+          i === chunks.length - 1
+            ? {
+                ...chunk,
+                error: error.message,
+              }
+            : chunk,
+        ),
+      );
+    }
 
     await processContinueChatResponse({ data, error });
 
@@ -283,43 +320,86 @@ export const ChatContainer = (props: Props) => {
           context: "While sending message",
         }),
       ];
+
+      setChatChunks(
+        addNewChunk({
+          clientSideActions: [],
+          input: {
+            id: "h2sw8y6emef1vhcchkoiroq3",
+            type: InputBlockType.TEXT,
+            options: {
+              labels: {
+                placeholder: "",
+              },
+              variableId: "vl69t19paxkk3k9vsbrghjovj",
+              isLong: true,
+              audioClip: {
+                isEnabled: true,
+                saveVariableId: "vgtnvs8vk2mk2alwctrbph2sq",
+              },
+              attachments: {
+                isEnabled: true,
+              },
+            },
+            // // answer: {
+            // //   type: 'text',
+            // //   value: 'tell me informations about the server you are running?',
+            // // },
+            // prefilledValue: "hi!!",
+          },
+          messages: [],
+        }),
+      );
+
       await saveClientLogsQuery({
         apiHost: props.context.apiHost,
         sessionId: props.initialChatReply.sessionId,
         clientLogs: errorLogs,
       });
+
       props.onNewLogs?.(errorLogs);
+
       return;
     }
-    if (!data) return;
-    if (data.progress) props.onProgressUpdate?.(data.progress);
-    if (data.lastMessageNewFormat)
+
+    if (!data) {
+      return;
+    }
+
+    if (data.progress) {
+      props.onProgressUpdate?.(data.progress);
+    }
+
+    if (data.lastMessageNewFormat) {
       setChatChunks(updateAnswerOnLastChunk(data.lastMessageNewFormat));
-    if (data.logs) props.onNewLogs?.(data.logs);
-    if (data.dynamicTheme?.backgroundUrl)
+    }
+
+    if (data.logs) {
+      props.onNewLogs?.(data.logs);
+    }
+
+    if (data.dynamicTheme?.backgroundUrl) {
       updateBgImage(data.dynamicTheme.backgroundUrl, botContainer()?.style);
+    }
+
     if (data.input && props.onNewInputBlock) {
       props.onNewInputBlock(data.input);
     }
+
     setChatChunks(addNewChunk(data));
+
     await popClientSideActions();
   };
 
-  const autoScrollToBottom = ({
+  const scrollToBottom = ({
     lastElement,
     offset = 0,
   }: { lastElement?: HTMLDivElement; offset?: number } = {}) => {
     const scrollContainer = getScrollContainer();
 
-    if (!scrollContainer) return;
-
-    const isBottomOfLastElementTooFarBelow =
-      scrollContainer.scrollTop + scrollContainer.clientHeight <
-      scrollContainer.scrollHeight -
-        scrollContainer.clientHeight *
-          AUTO_SCROLL_CLIENT_HEIGHT_PERCENT_TOLERANCE;
-
-    if (isBottomOfLastElementTooFarBelow && !isLastAutoScrollAtBottom()) return;
+    if (!scrollContainer) {
+      return;
+    }
 
     const onScrollEnd = (callback: () => void) => {
       let scrollTimeout: number;
@@ -330,7 +410,7 @@ export const ChatContainer = (props: Props) => {
         scrollTimeout = window.setTimeout(() => {
           callback();
           scrollContainer?.removeEventListener("scroll", scrollListener);
-        }, 100);
+        }, 1);
       };
 
       scrollContainer?.addEventListener("scroll", scrollListener, {
@@ -340,15 +420,82 @@ export const ChatContainer = (props: Props) => {
 
     setTimeout(() => {
       onScrollEnd(() => {
-        if (!scrollContainer) return;
+        if (!scrollContainer) {
+          return;
+        }
+
         const isAtBottom =
           Math.abs(
             scrollContainer.scrollHeight -
               scrollContainer.scrollTop -
               scrollContainer.clientHeight,
           ) < 2;
+
         setIsLastAutoScrollAtBottom(isAtBottom);
       });
+
+      scrollContainer?.scrollTo({
+        top: lastElement
+          ? lastElement.offsetTop - offset
+          : scrollContainer?.scrollHeight,
+        behavior: "smooth",
+      });
+    }, AUTO_SCROLL_DELAY);
+  };
+
+  const autoScrollToBottom = ({
+    lastElement,
+    offset = 0,
+  }: { lastElement?: HTMLDivElement; offset?: number } = {}) => {
+    const scrollContainer = getScrollContainer();
+
+    if (!scrollContainer) {
+      return;
+    }
+
+    const isBottomOfLastElementTooFarBelow =
+      scrollContainer.scrollTop + scrollContainer.clientHeight <
+      scrollContainer.scrollHeight -
+        scrollContainer.clientHeight *
+          AUTO_SCROLL_CLIENT_HEIGHT_PERCENT_TOLERANCE;
+
+    if (isBottomOfLastElementTooFarBelow && !isLastAutoScrollAtBottom()) {
+      return;
+    }
+
+    const onScrollEnd = (callback: () => void) => {
+      let scrollTimeout: number;
+
+      const scrollListener = () => {
+        clearTimeout(scrollTimeout);
+
+        scrollTimeout = window.setTimeout(() => {
+          callback();
+          scrollContainer?.removeEventListener("scroll", scrollListener);
+        }, 1);
+      };
+
+      scrollContainer?.addEventListener("scroll", scrollListener, {
+        passive: true,
+      });
+    };
+
+    setTimeout(() => {
+      onScrollEnd(() => {
+        if (!scrollContainer) {
+          return;
+        }
+
+        const isAtBottom =
+          Math.abs(
+            scrollContainer.scrollHeight -
+              scrollContainer.scrollTop -
+              scrollContainer.clientHeight,
+          ) < 2;
+
+        setIsLastAutoScrollAtBottom(isAtBottom);
+      });
+
       scrollContainer?.scrollTo({
         top: lastElement
           ? lastElement.offsetTop - offset
@@ -376,19 +523,25 @@ export const ChatContainer = (props: Props) => {
    */
   const popClientSideActions = async (lastBubbleBlockId?: string) => {
     let hasStreamError = false;
+
     const actionsToExecuteNow = [];
+
     for (const action of chatChunks().at(-1)?.clientSideActions ?? []) {
       if (lastBubbleBlockId !== action.lastBubbleBlockId) break;
       actionsToExecuteNow.push(action);
     }
+
     if (actionsToExecuteNow.length === 0) return;
+
     for (const action of actionsToExecuteNow) {
       if (
         "streamOpenAiChatCompletion" in action ||
         "webhookToExecute" in action ||
         "stream" in action
-      )
+      ) {
         setIsSending(true);
+      }
+
       const response = await executeClientSideAction({
         clientSideAction: action,
         context: {
@@ -405,12 +558,14 @@ export const ChatContainer = (props: Props) => {
           props.onNewLogs?.([error]);
         },
       });
+
       if ("streamOpenAiChatCompletion" in action || "stream" in action) {
         if (response && "replyToSend" in response && !response.replyToSend) {
           setIsSending(false);
           continue;
         }
       }
+
       if (hasStreamError) return;
 
       setChatChunks(popClientSideAction);
@@ -443,10 +598,6 @@ export const ChatContainer = (props: Props) => {
     }
   };
 
-  onCleanup(() => {
-    window.removeEventListener("message", processIncomingEvent);
-  });
-
   const processIncomingEvent = async (event: MessageEvent<CommandData>) => {
     const { data } = event;
     if (
@@ -469,21 +620,26 @@ export const ChatContainer = (props: Props) => {
       }
 
       await new Promise((resolve) => setTimeout(resolve, 5000));
+
       return sendCommandAndProcessResponse(command, retryCount + 1, maxRetries);
     }
 
     const longRequest = setTimeout(() => {
       setIsSending(true);
     }, 1000);
+
     autoScrollToBottom();
+
     const { data, error } = await continueChatQuery({
       apiHost: props.context.apiHost,
       sessionId: props.initialChatReply.sessionId,
+      virtualAssistantId: props.initialChatReply.virtualAssistantId,
       message: {
         type: "command",
         command,
       },
     });
+
     clearTimeout(longRequest);
     setIsSending(false);
     const currentInputBlock = chatChunks().at(-1)?.input;
@@ -530,6 +686,8 @@ export const ChatContainer = (props: Props) => {
           flex: 1,
           height: "100%",
           overflow: "auto",
+          "margin-bottom": onShowInput() ? "70px" : "0",
+          transition: "margin-bottom 0.1s",
         }}
       >
         <div
@@ -544,6 +702,31 @@ export const ChatContainer = (props: Props) => {
             "border-radius": "10px",
           }}
         >
+          <Show when={!isAtBottom()}>
+            <div
+              class="fixed left-6 bottom-6 z-50"
+              style={{
+                left: "0px",
+                bottom: "115px",
+                width: "calc(100% - 30px)",
+                "justify-self": "anchor-center",
+                padding: 0,
+                margin: 0,
+                "text-align": "center",
+                position: "absolute",
+              }}
+            >
+              <button
+                class="shadow-xs rounded-full px-2 py-1 text-xs font-medium border border-gray-200 hover:bg-gray-100 transition bg-button-bg border-button-border border-button rounded-button text-button-text"
+                onClick={() => scrollToBottom()}
+                aria-label="Scroll to bottom"
+                type="button"
+              >
+                ↓ Scroll to bottom
+              </button>
+            </div>
+          </Show>
+
           <div class="w-full flex flex-col gap-2 @xs:px-5 px-3">
             <Index
               each={chatChunks().filter(hasExecutedInitialClientSideActions)}
@@ -552,6 +735,8 @@ export const ChatContainer = (props: Props) => {
                 <ChatChunk
                   index={index}
                   messages={chunk().messages}
+                  error={chunk().error || null}
+                  onShowInput={handleShowInput}
                   input={chunk().input}
                   theme={mergeThemes(
                     props.initialChatReply.typebot.theme,
@@ -590,7 +775,7 @@ export const ChatContainer = (props: Props) => {
 
 // Needed because we need to simulate a bottom padding relative to the chat view height
 const BottomSpacer = () => (
-  <div class="w-full flex-shrink-0 typebot-bottom-spacer h-5" />
+  <div class="w-full flex-shrink-0 typebot-bottom-spacer h-3" />
 );
 
 const convertSubmitContentToMessage = (

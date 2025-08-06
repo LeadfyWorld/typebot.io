@@ -84,7 +84,7 @@ export const ApiModal = ({
                   lang={"shell"}
                   value={`${parseApiHost(
                     typebot?.customDomain,
-                  )}/api/v1/sessions/<ID_FROM_FIRST_RESPONSE>/continueChat`}
+                  )}/api/sessions/<ID_FROM_FIRST_RESPONSE>/continueChat`}
                 />
                 <Text>With the following JSON body:</Text>
                 <CodeEditor

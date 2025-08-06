@@ -1,11 +1,12 @@
 import { isDefined } from "@typebot.io/lib/utils";
-import React, { useState } from "react";
+import { useState } from "react";
 import { DefaultAvatar } from "./DefaultAvatar";
 
 export const Avatar = ({ avatarSrc }: { avatarSrc?: string }) => {
   const [currentAvatarSrc] = useState(avatarSrc);
 
   if (currentAvatarSrc === "") return <></>;
+
   if (isDefined(currentAvatarSrc))
     return (
       <figure

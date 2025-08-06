@@ -155,8 +155,10 @@ export const Popup = (props: PopupProps) => {
       >
         <style>
           {typebotColors}
+
           {styles}
         </style>
+
         <div
           class="relative"
           aria-labelledby="modal-title"
@@ -170,6 +172,7 @@ export const Popup = (props: PopupProps) => {
             class="fixed inset-0 bg-black bg-opacity-50 transition-opacity animate-fade-in"
             part="overlay"
           />
+
           <div class="fixed inset-0 z-10 overflow-y-auto">
             <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
               <div
@@ -189,6 +192,7 @@ export const Popup = (props: PopupProps) => {
                   onScriptExecutionSuccess={handleScriptExecutionSuccessMessage}
                   prefilledVariables={prefilledVariables()}
                   onChatStatePersisted={handleOnChatStatePersisted}
+                  closeBot={closeBot}
                 />
               </div>
             </div>

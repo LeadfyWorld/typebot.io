@@ -21,9 +21,11 @@ type Props = Pick<ChatChunkType, "messages" | "input" | "streamingMessage"> & {
   theme: Theme;
   settings: Settings;
   index: number;
+  error: string | null;
   context: BotContext;
   hideAvatar: boolean;
   isTransitionDisabled?: boolean;
+  onShowInput: (show: boolean) => void;
   onNewBubbleDisplayed: (blockId: string) => Promise<void>;
   onScrollToBottom: ({
     lastElement,
@@ -51,6 +53,7 @@ export const ChatChunk = (props: Props) => {
     if (props.messages.length === 0) {
       props.onAllBubblesDisplayed();
     }
+
     props.onScrollToBottom({ lastElement: inputRef, offset: 50 });
   });
 
@@ -75,7 +78,9 @@ export const ChatChunk = (props: Props) => {
         ? displayedMessageIndex()
         : displayedMessageIndex() + 1,
     );
+
     props.onScrollToBottom({ lastElement: bubbleRef });
+
     if (displayedMessageIndex() === props.messages.length) {
       setLastBubble(bubbleRef);
       props.onAllBubblesDisplayed();
@@ -142,9 +147,11 @@ export const ChatChunk = (props: Props) => {
         <InputChatBlock
           ref={inputRef}
           input={props.input!}
+          error={props.error}
           chunkIndex={props.index}
           theme={props.theme}
           context={props.context}
+          onShowInput={props.onShowInput}
           isInputPrefillEnabled={
             props.settings.general?.isInputPrefillEnabled ??
             defaultSettings.general.isInputPrefillEnabled

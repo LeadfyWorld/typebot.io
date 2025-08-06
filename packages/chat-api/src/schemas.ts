@@ -339,6 +339,7 @@ const chatResponseBaseSchema = z.object({
       "The sent message is validated and formatted on the backend. For example, if for a date input you replied something like `tomorrow`, the backend will convert it to a date string. This field returns the formatted message.",
     ),
   messages: z.array(chatBubbleSchema),
+  error: z.string().nullable().optional(),
   chunks: z
     .any()
     .optional()

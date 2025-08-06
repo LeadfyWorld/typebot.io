@@ -3,9 +3,16 @@ import { colors } from "@typebot.io/ui/colors";
 import { Match, Show, Switch } from "solid-js";
 import { DefaultAvatar } from "./DefaultAvatar";
 
+const sizes = {
+  md: "w-6 h-6",
+  lg: "w-8 h-8",
+  xl: "w-10 h-10",
+};
+
 export const Avatar = (props: {
   src: string | undefined;
   isChatContainerLight: boolean;
+  size?: keyof typeof sizes;
 }) => {
   return (
     <Show
@@ -25,16 +32,20 @@ export const Avatar = (props: {
         <Match when={isEmoji(props.src ?? "")}>
           <span class="text-4xl text-[40px]">{props.src}</span>
         </Match>
+
         <Match when={isSvgSrc(props.src)}>
           <img
             src={props.src}
             alt="Bot avatar"
-            class="flex justify-center items-center relative animate-fade-in flex-shrink-0 w-6 h-6 text-sm @xs:w-10 @xs:h-10 @xs:text-xl"
+            class={`flex justify-center items-center relative animate-fade-in flex-shrink-0 ${sizes[props.size || "md"]} text-sm @xs:w-10 @xs:h-10 @xs:text-xl`}
             elementtiming={"Bot avatar"}
           />
         </Match>
+
         <Match when={true}>
-          <figure class="flex justify-center items-center rounded-full text-white relative animate-fade-in flex-shrink-0 w-6 h-6 text-sm @xs:w-10 @xs:h-10 @xs:text-xl">
+          <figure
+            class={`flex justify-center items-center rounded-full text-white relative animate-fade-in flex-shrink-0 ${sizes[props.size || "md"]} text-sm @xs:w-10 @xs:h-10 @xs:text-xl`}
+          >
             <img
               src={props.src}
               alt="Bot avatar"

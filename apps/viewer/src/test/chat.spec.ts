@@ -65,7 +65,7 @@ test("API chat execution should work on preview bot", async ({ request }) => {
 
   await test.step("Can answer Name question", async () => {
     const { messages, input } = await (
-      await request.post(`/api/v1/sessions/${chatSessionId}/continueChat`, {
+      await request.post(`/api/sessions/${chatSessionId}/continueChat`, {
         data: {
           message: "John",
         },
@@ -137,7 +137,7 @@ test("API chat execution should work on published bot", async ({ request }) => {
 
   await test.step("Answer Name question", async () => {
     const { messages, input } = await (
-      await request.post(`/api/v1/sessions/${chatSessionId}/continueChat`, {
+      await request.post(`/api/sessions/${chatSessionId}/continueChat`, {
         data: { message: "John" },
       })
     ).json();
@@ -168,7 +168,7 @@ test("API chat execution should work on published bot", async ({ request }) => {
 
   await test.step("Answer Age question", async () => {
     const { messages, input } = await (
-      await request.post(`/api/v1/sessions/${chatSessionId}/continueChat`, {
+      await request.post(`/api/sessions/${chatSessionId}/continueChat`, {
         data: { message: "24" },
       })
     ).json();
@@ -207,7 +207,7 @@ test("API chat execution should work on published bot", async ({ request }) => {
 
   await test.step("Answer Rating question", async () => {
     const { messages, input } = await (
-      await request.post(`/api/v1/sessions/${chatSessionId}/continueChat`, {
+      await request.post(`/api/sessions/${chatSessionId}/continueChat`, {
         data: { message: "8" },
       })
     ).json();
@@ -222,7 +222,7 @@ test("API chat execution should work on published bot", async ({ request }) => {
 
   await test.step("Answer Email question with wrong input", async () => {
     const { messages, input } = await (
-      await request.post(`/api/v1/sessions/${chatSessionId}/continueChat`, {
+      await request.post(`/api/sessions/${chatSessionId}/continueChat`, {
         data: { message: "invalid email" },
       })
     ).json();
@@ -241,7 +241,7 @@ test("API chat execution should work on published bot", async ({ request }) => {
 
   await test.step("Answer Email question with valid input", async () => {
     const { messages, input } = await (
-      await request.post(`/api/v1/sessions/${chatSessionId}/continueChat`, {
+      await request.post(`/api/sessions/${chatSessionId}/continueChat`, {
         data: { message: "typebot@email.com" },
       })
     ).json();
@@ -251,7 +251,7 @@ test("API chat execution should work on published bot", async ({ request }) => {
 
   await test.step("Answer URL question", async () => {
     const { messages, input } = await (
-      await request.post(`/api/v1/sessions/${chatSessionId}/continueChat`, {
+      await request.post(`/api/sessions/${chatSessionId}/continueChat`, {
         data: { message: "https://typebot.io" },
       })
     ).json();
@@ -261,7 +261,7 @@ test("API chat execution should work on published bot", async ({ request }) => {
 
   await test.step("Answer Buttons question with invalid choice", async () => {
     const { messages } = await (
-      await request.post(`/api/v1/sessions/${chatSessionId}/continueChat`, {
+      await request.post(`/api/sessions/${chatSessionId}/continueChat`, {
         data: { message: "Yes" },
       })
     ).json();

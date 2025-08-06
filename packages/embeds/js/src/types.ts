@@ -29,6 +29,7 @@ export type ChatChunk = Pick<
     answer?: InputSubmitContent;
     isHidden?: boolean;
   };
+  error?: string | null;
   streamingMessage?: string | string[];
 };
 

@@ -29,6 +29,7 @@ export const runGenerateVariables = async ({
     variablesToExtract,
     variables,
   });
+
   if (!schema) {
     logs.add("Could not parse variables to extract");
     return;
@@ -74,7 +75,9 @@ const convertVariablesToExtractToSchema = ({
     const matchingVariable = variables.find(
       (v) => v.id === variableToExtract.variableId,
     );
+
     if (!matchingVariable) return;
+
     switch (variableToExtract.type) {
       case "string":
         shape[matchingVariable.name] = z.string();
@@ -92,6 +95,7 @@ const convertVariablesToExtractToSchema = ({
         break;
       }
     }
+
     if (variableToExtract.isRequired === false)
       shape[matchingVariable.name] = shape[matchingVariable.name]!.nullish();
 

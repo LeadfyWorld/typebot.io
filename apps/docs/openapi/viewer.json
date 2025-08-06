@@ -2055,6 +2055,10 @@
                         ]
                       }
                     },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    },
                     "chunks": {
                       "description": "If the chat is streamed, this field will contain the streamed chunks of the last message."
                     },
@@ -2608,6 +2612,10 @@
                           }
                         ]
                       }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
                     },
                     "chunks": {
                       "description": "If the chat is streamed, this field will contain the streamed chunks of the last message."
@@ -3407,6 +3415,10 @@
                           }
                         ]
                       }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
                     },
                     "chunks": {
                       "description": "If the chat is streamed, this field will contain the streamed chunks of the last message."
@@ -14544,6 +14556,9 @@
           "general": {
             "type": "object",
             "properties": {
+              "name": {
+                "type": "string"
+              },
               "font": {
                 "anyOf": [
                   {

@@ -57,6 +57,7 @@ export const LiteBadge = (props: Props) => {
         });
       });
     });
+
     elementObserver.observe(props.botContainer, {
       subtree: false,
       childList: true,

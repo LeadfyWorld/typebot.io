@@ -8,7 +8,7 @@ import type { Theme } from "@typebot.io/theme/schemas";
 import type { Edge } from "@typebot.io/typebot/schemas/edge";
 import type { PublicTypebot } from "@typebot.io/typebot/schemas/publicTypebot";
 import type { VariableWithValue } from "@typebot.io/variables/schemas";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { animateScroll as scroll } from "react-scroll";
 import { useAnswers } from "../providers/AnswersProvider";
 import { ChatGroup } from "./ChatGroup";
@@ -125,12 +125,18 @@ export const ConversationContainer = ({
   };
 
   useEffect(() => {
-    if (!document) return;
+    if (!document) {
+      return;
+    }
+
     setCssVariablesValue(theme, document.body.style);
   }, [theme]);
 
   const autoScrollToBottom = () => {
-    if (!scrollableContainer.current) return;
+    if (!scrollableContainer.current) {
+      return;
+    }
+
     setTimeout(() => {
       scroll.scrollToBottom({
         duration: 500,
@@ -166,7 +172,10 @@ export const ConversationContainer = ({
       </ChatProvider>
 
       {/* We use a block to simulate padding because it makes iOS scroll flicker */}
-      <div className="w-full h-32" ref={bottomAnchor} />
+      <div
+        className="w-full h-32"
+        ref={bottomAnchor}
+      />
     </div>
   );
 };

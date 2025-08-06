@@ -316,6 +316,7 @@ export const Bubble = (props: BubbleProps) => {
               "border-radius": "20px",
               display: "flex",
               "flex-direction": "column",
+              "background-color": "transparent",
             }}
             class={cx(
               "absolute rounded-lg max-h-[calc(100dvh-20px-var(--container-bottom)-var(--button-gap)-var(--button-size))] shadow-lg bg-[var(--bot-bg-color)] h-[var(--bot-max-height)] max-w-[var(--bot-max-width)] overflow-hidden",
@@ -334,6 +335,7 @@ export const Bubble = (props: BubbleProps) => {
                 onScriptExecutionSuccess={handleScriptExecutionSuccess}
                 onChatStatePersisted={handleOnChatStatePersisted}
                 leadInfo={leadInfo()}
+                closeBot={closeBot}
                 setLead={(value) => {
                   setLeadInfo(value);
                 }}

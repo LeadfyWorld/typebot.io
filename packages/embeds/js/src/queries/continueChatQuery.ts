@@ -19,9 +19,11 @@ export const continueChatQuery = async ({
   apiHost,
   message,
   sessionId,
+  virtualAssistantId,
 }: {
   apiHost?: string;
   message?: Message;
+  virtualAssistantId?: string | null;
   sessionId: string;
 }) => {
   try {
@@ -29,7 +31,7 @@ export const continueChatQuery = async ({
       .post(
         `${
           isNotEmpty(apiHost) ? apiHost : guessApiHost()
-        }/api/v1/sessions/${sessionId}/continueChat`,
+        }/api/sessions/${virtualAssistantId}/continueChat`,
         {
           json: {
             message,
@@ -42,6 +44,8 @@ export const continueChatQuery = async ({
 
     return { data };
   } catch (error) {
-    return { error };
+    const typeError = error as Error;
+
+    return { error: typeError };
   }
 };

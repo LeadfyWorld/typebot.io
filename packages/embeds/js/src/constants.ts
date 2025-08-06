@@ -23,6 +23,7 @@ export const defaultBotProps: BotProps = {
   sessionId: undefined,
   leadInfo: null,
   setLead: undefined,
+  closeBot: undefined,
 };
 
 export const defaultPopupProps: PopupProps = {

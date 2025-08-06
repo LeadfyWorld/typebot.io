@@ -39,6 +39,7 @@ import {
   defaultFontType,
   defaultProgressBarPosition,
 } from "@typebot.io/theme/constants";
+import { isChatContainerLight } from "@typebot.io/theme/helpers/isChatContainerLight";
 import type { Font } from "@typebot.io/theme/schemas";
 import { cn } from "@typebot.io/ui/lib/cn";
 import { cx } from "@typebot.io/ui/lib/cva";
@@ -51,6 +52,7 @@ import {
   onCleanup,
 } from "solid-js";
 import { Portal } from "solid-js/web";
+import { Avatar } from "../components/avatars/Avatar";
 import { Button, buttonVariants } from "./Button";
 import { ChatContainer } from "./ConversationContainer/ChatContainer";
 import { ErrorMessage } from "./ErrorMessage";
@@ -77,6 +79,7 @@ export type BotProps = {
   progressBarRef?: HTMLDivElement;
   startFrom?: StartFrom;
   sessionId?: string;
+  closeBot?: () => void;
   setLead?: (
     lead: { name: string; email: string; phone: string } | null,
   ) => void;
@@ -281,6 +284,7 @@ export const Bot = (props: BotProps & { class?: string }) => {
           <>
             {props.leadInfo ? (
               <BotContent
+                closeBot={props.closeBot}
                 class={props.class}
                 initialChatReply={{
                   ...initialChatReply,
@@ -327,6 +331,7 @@ export const Bot = (props: BotProps & { class?: string }) => {
             ) : (
               <BotFormContent
                 class={props.class}
+                closeBot={props.closeBot}
                 initialChatReply={{
                   ...initialChatReply,
                   typebot: {
@@ -383,6 +388,7 @@ type BotContentProps = {
   context: BotContext;
   class?: string;
   progressBarRef?: HTMLDivElement;
+  closeBot?: () => void;
   onNewInputBlock?: (inputBlock: InputBlock) => void;
   onAnswer?: (answer: { message: string; blockId: string }) => void;
   onEnd?: () => void;
@@ -408,7 +414,9 @@ const BotContent = (props: BotContentProps) => {
         family: defaultFontFamily,
       },
     );
+
     if (!botContainer) return;
+
     setCssVariablesValue({
       theme: mergeThemes(
         props.initialChatReply.typebot.theme,
@@ -441,6 +449,88 @@ const BotContent = (props: BotContentProps) => {
           "--bot-container-height": botContainerHeight(),
         }}
       >
+        <div
+          style={{
+            display: "flex",
+            "align-self": "center",
+            "align-items": "center",
+            margin: "15px 15px 0px",
+            gap: "10px",
+            color: textColor(
+              props.context.typebot.theme.general?.background?.content ||
+                "#fff",
+            ),
+            "font-size": "10px",
+            width: "90%",
+            height: "30px",
+            "justify-content": "left",
+          }}
+        >
+          <Avatar
+            size="lg"
+            src={props.initialChatReply.typebot.theme.chat?.hostAvatar?.url}
+            isChatContainerLight={isChatContainerLight({
+              chatContainer:
+                props.initialChatReply.typebot.theme.chat?.container,
+              generalBackground:
+                props.initialChatReply.typebot.theme.general?.background,
+            })}
+          />
+
+          <div
+            style={{
+              "align-self": "center",
+              "align-items": "center",
+              "line-height": "15px",
+            }}
+          >
+            <p class="text-sm">
+              {props.initialChatReply.typebot.theme.general?.name}
+            </p>
+
+            <p class="text-md font-normal text-gray-600">Online</p>
+          </div>
+
+          {props.closeBot && (
+            <button
+              type="button"
+              aria-label="Fechar"
+              onClick={props.closeBot}
+              style={{
+                border: "none",
+                background: "#fff",
+                "border-radius": "50%",
+                width: "32px",
+                height: "32px",
+                display: "flex",
+                "align-items": "center",
+                "justify-content": "center",
+                "box-shadow": "0 1px 4px rgba(0,0,0,0.08)",
+                cursor: "pointer",
+                "margin-left": "auto",
+              }}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ display: "block" }}
+              >
+                <path
+                  d="M5 5L13 13M13 5L5 13"
+                  stroke="#222"
+                  style={{
+                    "stroke-width": "2",
+                    "stroke-linecap": "round",
+                  }}
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+
         <Show
           when={
             isDefined(progressValue()) &&
@@ -477,11 +567,13 @@ const BotContent = (props: BotContentProps) => {
           class="w-full"
         >
           {(toast) => (
-            <Toast.Root class="flex flex-col pl-4 py-4 pr-8 gap-2 max-w-[350px] rounded-chat text-input-text border-input border-input-border bg-input-bg shadow-input data-[state=open]:animate-fade-in-from-bottom data-[state=closed]:animate-fade-out-from-bottom">
+            <Toast.Root class="flex flex-col pl-4 py-4 pr-8 gap-2 rounded-chat text-input-text border-input border-input-border bg-input-bg shadow-input data-[state=open]:animate-fade-in-from-bottom data-[state=closed]:animate-fade-out-from-bottom">
               <Toast.Title class="font-semibold">{toast().title}</Toast.Title>
+
               <Toast.Description class="text-sm">
                 {toast().description}
               </Toast.Description>
+
               <Toast.CloseTrigger
                 class={cn(
                   "absolute right-2 top-2",
@@ -490,6 +582,7 @@ const BotContent = (props: BotContentProps) => {
               >
                 <CloseIcon class="w-4 h-4" />
               </Toast.CloseTrigger>
+
               <Show when={toast().meta?.link as string}>
                 {(link) => (
                   <a
@@ -522,7 +615,7 @@ const BotContent = (props: BotContentProps) => {
                 "#fff",
             ),
             "font-size": "10px",
-            width: "100%",
+            width: "90%",
             height: "40px",
             "justify-content": "center",
           }}
@@ -550,6 +643,7 @@ type BotFormContentProps = {
   context: BotContext;
   class?: string;
   progressBarRef?: HTMLDivElement;
+  closeBot?: () => void;
   onNewInputBlock?: (inputBlock: InputBlock) => void;
   onAnswer?: (answer: { message: string; blockId: string }) => void;
   onEnd?: () => void;

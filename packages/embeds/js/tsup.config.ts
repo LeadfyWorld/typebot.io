@@ -22,5 +22,6 @@ export default defineConfig((options) => [
       js: `// v${version}`,
     },
     esbuildPlugins: [solidPlugin()],
+    outDir: "../../../../../public",
   },
 ]);

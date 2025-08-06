@@ -138,6 +138,12 @@ pre {
     "Segoe UI Symbol";
   container-type: size;
   border-radius: 20px;
+
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-font-smoothing: antialiased !important;
+  text-rendering: optimizelegibility !important;
+  letter-spacing: 0.01em;
 }
 
 .typebot-chat-view {
@@ -161,11 +167,11 @@ pre {
   }
 } */
 
-@container (min-height: 300px) {
+/* @container (min-height: 300px) {
   .typebot-bottom-spacer {
     @apply h-[20%];
   }
-}
+} */
 
 .typebot-selectable {
   border-width: var(--typebot-button-border-width);
@@ -245,7 +251,6 @@ pre {
 }
 
 .typebot-guest-bubble {
-  word-break: break-all;
   color: var(--typebot-guest-bubble-color);
   background-color: rgba(
     var(--typebot-guest-bubble-bg-rgb),
@@ -259,6 +264,12 @@ pre {
   border-radius: var(--typebot-guest-bubble-border-radius);
   box-shadow: var(--typebot-guest-bubble-box-shadow);
   backdrop-filter: blur(var(--typebot-guest-bubble-blur));
+  word-break: break-word;
+}
+
+.typebot-guest-bubble-error {
+  background-color: #ffcccc;
+  border-color: #ffcccc;
 }
 
 .typebot-guest-bubble-image-attachment {

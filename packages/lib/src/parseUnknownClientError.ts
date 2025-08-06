@@ -18,6 +18,7 @@ export const parseUnknownClientError = async ({
         description: err,
         details: undefined,
       };
+
     if (err instanceof Error) {
       if (
         "response" in err &&
@@ -39,6 +40,7 @@ export const parseUnknownClientError = async ({
           typeof err.cause === "string" ? err.cause : JSON.stringify(err.cause),
       };
     }
+
     return {
       context,
       description: JSON.stringify(err),

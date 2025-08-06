@@ -98,6 +98,7 @@ const progressBarSchema = z.object({
 export type ProgressBar = z.infer<typeof progressBarSchema>;
 
 const generalThemeSchema = z.object({
+  name: z.string().optional(),
   font: fontSchema.optional(),
   background: backgroundSchema.optional(),
   progressBar: progressBarSchema.optional(),

@@ -34,21 +34,22 @@ import type {
   RuntimeOptions,
 } from "@typebot.io/chat-api/schemas";
 import { isNotDefined } from "@typebot.io/lib/utils";
-import { defaultHostAvatarIsEnabled } from "@typebot.io/theme/constants";
 import type { Theme } from "@typebot.io/theme/schemas";
-import { Match, Show, Switch } from "solid-js";
+import { Match, Switch, createEffect, onCleanup } from "solid-js";
 import { GuestBubble } from "./bubbles/GuestBubble";
 
 type Props = {
   ref: HTMLDivElement | undefined;
   input: NonNullable<ChatChunk["input"]>;
   chunkIndex: number;
+  error: string | null;
   context: BotContext;
   isInputPrefillEnabled: boolean;
   theme: Theme;
   onTransitionEnd: () => void;
   onSubmit: (content: InputSubmitContent) => void;
   onSkip: (label: string) => void;
+  onShowInput: (show: boolean) => void;
 };
 
 export const InputChatBlock = (props: Props) => {
@@ -60,10 +61,23 @@ export const InputChatBlock = (props: Props) => {
     props.onSkip(label);
   };
 
+  createEffect(() => {
+    const shouldShowInput =
+      isNotDefined(props.input.answer) ||
+      props.input.answer?.status === "retry";
+
+    props.onShowInput(shouldShowInput);
+  });
+
+  onCleanup(() => {
+    props.onShowInput(false);
+  });
+
   return (
     <Switch>
       <Match when={props.input.answer && props.input.answer.status !== "retry"}>
         <GuestBubble
+          error={props.error}
           answer={props.input.answer}
           theme={props.theme}
         />
@@ -80,7 +94,7 @@ export const InputChatBlock = (props: Props) => {
           data-blockid={props.input.id}
           ref={props.ref}
           style={{
-            "border-top": "1px solid #ebebeb",
+            // "border-top": "1px solid #ebebeb",
             position: "absolute",
             bottom: "40px",
             width: "calc(100% - 30px)",
@@ -102,14 +116,14 @@ export const InputChatBlock = (props: Props) => {
               flex: 1,
             }}
           >
-            <Show
+            {/* <Show
               when={
                 props.theme.chat?.hostAvatar?.isEnabled ??
                 defaultHostAvatarIsEnabled
               }
             >
               <div class="flex flex-shrink-0 items-center w-6 h-6 @xs:w-10 @xs:h-10" />
-            </Show>
+            </Show> */}
 
             <Input
               context={props.context}
