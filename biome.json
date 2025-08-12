@@ -124,6 +124,7 @@
       "./apps/builder/src/components/inputs/CodeEditor.tsx",
       "./packages/embeds/js/src/components/bubbles/GuestBubble.tsx",
       "./packages/embeds/js/src/features/blocks/bubbles/image/components/ImageBubble.tsx",
+      "./apps/builder/src/components/VideoUploadContent/VideoLinkEmbedContent.tsx",
       "openapi/*.json",
       "routeTree.gen.ts",
       "i18n-ally-custom-framework.yml",

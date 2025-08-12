@@ -22,23 +22,32 @@ let typingTimeout: NodeJS.Timeout;
 
 export const TextBubble = (props: Props) => {
   let ref: HTMLDivElement | undefined;
+
   const [isTyping, setIsTyping] = createSignal(
     props.onTransitionEnd ? true : false,
   );
 
   const onTypingEnd = () => {
-    if (!isTyping()) return;
+    if (!isTyping()) {
+      return;
+    }
+
     setIsTyping(false);
+
     setTimeout(() => {
       props.onTransitionEnd?.(ref);
     }, showAnimationDuration);
   };
 
   onMount(() => {
-    if (!isTyping) return;
+    if (!isTyping) {
+      return;
+    }
+
     const plainText = props.content?.richText
       ? computePlainText(props.content.richText)
       : "";
+
     const typingDuration =
       props.typingEmulation?.enabled === false || props.isTypingSkipped
         ? 0
@@ -46,11 +55,14 @@ export const TextBubble = (props: Props) => {
             bubbleContent: plainText,
             typingSettings: props.typingEmulation,
           });
+
     typingTimeout = setTimeout(onTypingEnd, typingDuration);
   });
 
   onCleanup(() => {
-    if (typingTimeout) clearTimeout(typingTimeout);
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
   });
 
   return (

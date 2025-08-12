@@ -17,6 +17,7 @@ export const PlateElement = (props: Props) => (
         isUniqueChild={props.isUniqueChild ?? false}
       />
     </Match>
+
     <Match when={true}>
       <Switch>
         <Match when={props.element.type === "a"}>
@@ -37,6 +38,15 @@ export const PlateElement = (props: Props) => (
             </For>
           </a>
         </Match>
+
+        <Match when={props.element.type === "img"}>
+          <img
+            src={props.element.url as string}
+            alt={(props.element as any).alt || ""}
+            style={{ "max-width": "80%" }}
+          />
+        </Match>
+
         <Match when={props.element.type === "ol"}>
           <ol>
             <For each={props.element.children as TDescendant[]}>
@@ -51,6 +61,7 @@ export const PlateElement = (props: Props) => (
             </For>
           </ol>
         </Match>
+
         <Match when={props.element.type === "ul"}>
           <ul>
             <For each={props.element.children as TDescendant[]}>
@@ -65,6 +76,7 @@ export const PlateElement = (props: Props) => (
             </For>
           </ul>
         </Match>
+
         <Match when={props.element.type === "li"}>
           <li>
             <For each={props.element.children as TDescendant[]}>
@@ -79,6 +91,7 @@ export const PlateElement = (props: Props) => (
             </For>
           </li>
         </Match>
+
         <Match when={true}>
           <ElementRoot
             element={props.element as TElement}
@@ -120,6 +133,7 @@ const ElementRoot = (props: ElementRootProps) => {
       >
         <span data-element-type={props.element.type}>{props.children}</span>
       </Match>
+
       <Match when={true}>
         <div data-element-type={props.element.type}>{props.children}</div>
       </Match>

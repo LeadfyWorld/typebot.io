@@ -54,10 +54,16 @@ export const VideoLinkEmbedContent = ({
           defaultValue={content?.url ?? ""}
           onChange={updateUrl}
         />
-        <Text fontSize="xs" color="gray.400" textAlign="center">
+
+        <Text
+          fontSize="xs"
+          color="gray.400"
+          textAlign="center"
+        >
           {t("video.urlInput.helperText")}
         </Text>
       </Stack>
+
       {content?.url && (
         <Stack>
           <TextInput
@@ -80,6 +86,7 @@ export const VideoLinkEmbedContent = ({
           />
         </Stack>
       )}
+
       {content?.url && content?.type === "url" && (
         <SwitchWithLabel
           label={"Display controls"}
@@ -90,6 +97,7 @@ export const VideoLinkEmbedContent = ({
           onCheckChange={updateControlsDisplay}
         />
       )}
+
       <SwitchWithLabel
         label={t("editor.blocks.bubbles.audio.settings.autoplay.label")}
         initialValue={
