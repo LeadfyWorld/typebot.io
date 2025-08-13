@@ -19,8 +19,6 @@ const updateWorkspace = async () => {
       isVerified: true,
     },
   });
-
-  console.log(workspace);
 };
 
 updateWorkspace();
