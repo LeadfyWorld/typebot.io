@@ -277,10 +277,11 @@ export const ChatContainer = (props: Props) => {
       autoScrollToBottom();
     }, 1000);
 
+    console.log("props.initialChatReply", props.initialChatReply);
+
     const { data, error } = await continueChatQuery({
       apiHost: props.context.apiHost,
       virtualAssistantId: props.initialChatReply.virtualAssistantId,
-      conversationId: props.initialChatReply.conversationId,
       sessionId: props.initialChatReply.sessionId,
       message: convertSubmitContentToMessage(answer),
     });
@@ -640,7 +641,6 @@ export const ChatContainer = (props: Props) => {
       apiHost: props.context.apiHost,
       sessionId: props.initialChatReply.sessionId,
       virtualAssistantId: props.initialChatReply.virtualAssistantId,
-      conversationId: props.initialChatReply.conversationId,
       message: {
         type: "command",
         createdAt: new Date().toISOString(),

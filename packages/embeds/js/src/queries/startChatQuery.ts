@@ -95,11 +95,11 @@ export async function startChatQuery({
           "x-typebot-iframe-referrer-origin": iframeReferrerOrigin,
         },
         json: {
-          isStreamEnabled: true,
-          prefilledVariables,
-          resultId,
-          isOnlyRegistering: false,
-          conversationId: window.gaGlobal.vid,
+          is_stream_enabled: true,
+          prefilled_variables: prefilledVariables,
+          result_id: resultId,
+          is_only_registering: false,
+          session_id: window.gaGlobal.vid,
         } satisfies Omit<
           StartChatInput,
           "publicId" | "textBubbleContentFormat"
@@ -121,11 +121,11 @@ export async function startChatQuery({
 export async function setChatLeadQuery({
   typebot,
   apiHost,
-  leadInfo,
+  formInputs,
 }: {
   apiHost?: string;
   typebot: string | any;
-  leadInfo: {
+  formInputs: {
     name: string;
     email: string;
     phone: string;
@@ -145,31 +145,25 @@ export async function setChatLeadQuery({
         }/api/sessions/${typebotId}/setLead`,
         {
           json: {
-            conversationId: window.gaGlobal?.vid,
-            leadInfo,
+            session_id: window.gaGlobal?.vid,
+            lead_info: formInputs,
           },
           timeout: false,
         },
       )
       .json<{
-        id: number;
-        data: {
-          name: string;
-          email: string;
-          phone: string;
-        };
-        conversation_id: string;
+        created_at: string;
+        id: string;
+        lead_id: string;
+        session_id: string;
+        virtual_assistant_id: string;
       }>();
 
     return {
       data: {
         id: data.id,
-        leadInfo: {
-          name: data.data.name,
-          email: data.data.email,
-          phone: data.data.phone,
-        },
-        conversationId: data.conversation_id,
+        sessionId: data.session_id,
+        virtualAssistantSessionId: data.id,
       },
     };
   } catch (error) {
@@ -200,7 +194,7 @@ const resumeChatAfterPaymentRedirect = async ({
         {
           json: {
             message: stripeRedirectStatus === "failed" ? "fail" : "Success",
-            conversationId: window.gaGlobal?.vid,
+            session_id: window.gaGlobal?.vid,
           },
           timeout: false,
         },
@@ -239,11 +233,11 @@ const startPreviewChat = async ({
         `${getApiHost(apiHost)}/api/sessions/${typebotId}/preview/startChat`,
         {
           json: {
-            isStreamEnabled: true,
-            startFrom,
+            is_stream_enabled: true,
+            start_from: startFrom,
             typebot,
-            prefilledVariables,
-            sessionId,
+            prefilled_variables: prefilledVariables,
+            session_id: sessionId,
           } satisfies Omit<
             StartPreviewChatInput,
             "typebotId" | "isOnlyRegistering" | "textBubbleContentFormat"

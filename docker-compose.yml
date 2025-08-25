@@ -1,5 +1,4 @@
 x-typebot-common: &typebot-common
-  restart: always
   depends_on:
     typebot-redis:
       condition: service_healthy
@@ -14,7 +13,6 @@ x-typebot-common: &typebot-common
 services:
   typebot-db:
     image: postgres:17.5
-    restart: always
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
@@ -30,7 +28,6 @@ services:
 
   typebot-redis:
     image: redis:alpine
-    restart: always
     command: --save 60 1 --loglevel warning
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping | grep PONG"]

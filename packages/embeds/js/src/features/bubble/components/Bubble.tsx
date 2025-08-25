@@ -80,11 +80,7 @@ export const Bubble = (props: BubbleProps) => {
 
   const [hasOpenedOnce, setHasOpenedOnce] = createSignal(false);
 
-  const [leadInfo, setLeadInfo] = createSignal<{
-    name: string;
-    email: string;
-    phone: string;
-  } | null>(null);
+  const [leadInfo, setLeadInfo] = createSignal<string | null>(null);
 
   const isControlled = createMemo(() => isDefined(bubbleProps.isOpen));
 

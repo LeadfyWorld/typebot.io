@@ -66,11 +66,7 @@ import { TextInput } from "./inputs/TextInput";
 export type BotProps = {
   id?: string;
   typebot: string | StartTypebot | undefined;
-  leadInfo?: null | {
-    name: string;
-    email: string;
-    phone: string;
-  };
+  leadInfo?: null | string;
   isPreview?: boolean;
   resultId?: string;
   prefilledVariables?: Record<string, unknown>;
@@ -81,9 +77,7 @@ export type BotProps = {
   startFrom?: StartFrom;
   sessionId?: string;
   closeBot?: () => void;
-  setLead?: (
-    lead: { name: string; email: string; phone: string } | null,
-  ) => void;
+  setLead?: (lead: string | null) => void;
   onNewInputBlock?: (inputBlock: InputBlock) => void;
   onAnswer?: (answer: { message: string; blockId: string }) => void;
   onInit?: () => void;
@@ -200,8 +194,8 @@ export const Bot = (props: BotProps & { class?: string }) => {
         ) {
           setInitialChatReply(initialChatInStorage);
 
-          if (props.setLead && data.conversationLead) {
-            props.setLead(data.conversationLead);
+          if (props.setLead && data.virtualAssistantSessionId) {
+            props.setLead(data.virtualAssistantSessionId);
           }
         } else {
           // Restart chat by resetting remembered state
@@ -212,8 +206,8 @@ export const Bot = (props: BotProps & { class?: string }) => {
             storage,
           });
 
-          if (props.setLead && data.conversationLead) {
-            props.setLead(data.conversationLead);
+          if (props.setLead && data.virtualAssistantSessionId) {
+            props.setLead(data.virtualAssistantSessionId);
           }
         }
       } else {
@@ -223,16 +217,16 @@ export const Bot = (props: BotProps & { class?: string }) => {
           storage,
         });
 
-        if (props.setLead && data.conversationLead) {
-          props.setLead(data.conversationLead);
+        if (props.setLead && data.virtualAssistantSessionId) {
+          props.setLead(data.virtualAssistantSessionId);
         }
       }
       props.onChatStatePersisted?.(true);
     } else {
       wipeExistingChatStateInStorage(data.typebot.id);
       setInitialChatReply(data);
-      if (props.setLead && data.conversationLead) {
-        props.setLead(data.conversationLead);
+      if (props.setLead && data.virtualAssistantSessionId) {
+        props.setLead(data.virtualAssistantSessionId);
       }
       if (data.input?.id && props.onNewInputBlock)
         props.onNewInputBlock(data.input);
@@ -668,9 +662,7 @@ const BotContent = (props: BotContentProps) => {
 };
 
 type BotFormContentProps = {
-  setLead?: (
-    values: { name: string; email: string; phone: string } | null,
-  ) => void;
+  setLead?: (values: string | null) => void;
   initialChatReply: StartChatResponse;
   context: BotContext;
   class?: string;
@@ -778,7 +770,7 @@ const BotFormContent = (props: BotFormContentProps) => {
     const result = await setChatLeadQuery({
       apiHost: props.context.apiHost,
       typebot: props.initialChatReply.virtualAssistantId,
-      leadInfo: {
+      formInputs: {
         name: name,
         email: email,
         phone: phone,
@@ -786,7 +778,7 @@ const BotFormContent = (props: BotFormContentProps) => {
     });
 
     if (props.setLead) {
-      props.setLead(result.data?.leadInfo || null);
+      props.setLead(result.data?.virtualAssistantSessionId || null);
     }
   };
 

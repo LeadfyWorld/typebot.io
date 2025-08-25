@@ -2,7 +2,6 @@ version: "3.9"
 services:
   typebot-db:
     image: postgres:17.5
-    restart: always
     volumes:
       - ${PWD}/.typebot-build/database:/var/lib/postgresql/data
     environment:
@@ -21,7 +20,6 @@ services:
     depends_on:
       typebot-db:
         condition: service_healthy
-    restart: always
     ports:
       - "8080:3000"
     extra_hosts:
@@ -35,7 +33,6 @@ services:
     depends_on:
       typebot-db:
         condition: service_healthy
-    restart: always
     ports:
       - "8081:3000"
     env_file: .env.docker

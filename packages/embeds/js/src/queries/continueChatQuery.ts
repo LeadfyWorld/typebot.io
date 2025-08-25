@@ -10,12 +10,11 @@ export const continueChatQuery = async ({
   apiHost,
   message,
   virtualAssistantId,
-  conversationId,
+  sessionId,
 }: {
   apiHost?: string;
   message?: Message;
   virtualAssistantId: string;
-  conversationId: string;
   sessionId: string;
 }) => {
   try {
@@ -27,7 +26,7 @@ export const continueChatQuery = async ({
         {
           json: {
             message,
-            conversationId: conversationId,
+            session_id: sessionId,
           },
           timeout: false,
         },
