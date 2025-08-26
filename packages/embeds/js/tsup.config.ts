@@ -11,7 +11,9 @@ export default defineConfig((options) => [
     dts: true,
   },
   {
-    entry: ["src/web.ts"],
+    entry: {
+      "virtual-support": "src/web.ts",
+    },
     minify: !options.watch,
     format: "esm",
     platform: "browser",
