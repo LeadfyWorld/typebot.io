@@ -22,7 +22,7 @@ export const continueChatQuery = async ({
       .post(
         `${
           isNotEmpty(apiHost) ? apiHost : guessApiHost()
-        }/api/sessions/${virtualAssistantId}/continueChat`,
+        }/api/virtual-assistants/${virtualAssistantId}/continue-chat`,
         {
           json: {
             message,

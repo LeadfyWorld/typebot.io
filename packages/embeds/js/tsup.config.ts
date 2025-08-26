@@ -12,7 +12,7 @@ export default defineConfig((options) => [
   },
   {
     entry: {
-      "virtual-support": "src/web.ts",
+      "virtual-assistant": "src/web.ts",
     },
     minify: !options.watch,
     format: "esm",

@@ -89,7 +89,7 @@ export async function startChatQuery({
         : undefined;
 
     const response = await ky.post(
-      `${getApiHost(apiHost)}/api/sessions/${typebotId}/startChat`,
+      `${getApiHost(apiHost)}/api/virtual-assistants/${typebotId}/start-chat`,
       {
         headers: {
           "x-typebot-iframe-referrer-origin": iframeReferrerOrigin,
@@ -142,7 +142,7 @@ export async function setChatLeadQuery({
       .post(
         `${
           isNotEmpty(apiHost) ? apiHost : guessApiHost()
-        }/api/sessions/${typebotId}/setLead`,
+        }/api/virtual-assistants/${typebotId}/set-lead`,
         {
           json: {
             session_id: window.gaGlobal?.vid,
@@ -188,7 +188,7 @@ const resumeChatAfterPaymentRedirect = async ({
   try {
     const data = await ky
       .post(
-        `${getApiHost(apiHost)}/api/sessions/${
+        `${getApiHost(apiHost)}/api/virtual-assistants/${
           paymentInProgressState.sessionId
         }/continueChat`,
         {
@@ -230,7 +230,7 @@ const startPreviewChat = async ({
   try {
     const data = await ky
       .post(
-        `${getApiHost(apiHost)}/api/sessions/${typebotId}/preview/startChat`,
+        `${getApiHost(apiHost)}/api/virtual-assistants/${typebotId}/preview/start-chat`,
         {
           json: {
             is_stream_enabled: true,
